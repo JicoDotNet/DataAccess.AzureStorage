@@ -21,11 +21,11 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        private protected async Task CreateTableAsync()
+        private protected void CreateTableIfNot()
         {
             try
             {
-                await tableClient.CreateIfNotExistsAsync();
+                tableClient.CreateIfNotExists();
             }
             catch (Exception ex)
             {

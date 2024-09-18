@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <ol>
+        <li> <a href="@Url.Action("Add", "TableTest")">Table Add</a></li>
+        <li><a href="@Url.Action("Show", "TableTest")">Table Show</a></li>
+    </ol>
+   
+    
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

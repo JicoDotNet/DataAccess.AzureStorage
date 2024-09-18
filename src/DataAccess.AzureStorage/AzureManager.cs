@@ -6,7 +6,7 @@ namespace DataAccess.AzureStorage
     {
         private protected string AzureStorageConnectionString { get; private set; }
         public AzureManager(string _azureStorageConnectionString) {
-            if (string.IsNullOrEmpty(_azureStorageConnectionString.ToString()))
+            if (string.IsNullOrEmpty(_azureStorageConnectionString))
             {
                 throw new ArgumentNullException(nameof(AzureStorageConnectionString), "Connection String value can't be empty");
             }

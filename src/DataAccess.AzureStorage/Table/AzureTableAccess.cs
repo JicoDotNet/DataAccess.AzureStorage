@@ -14,14 +14,14 @@ namespace DataAccess.AzureStorage.Table
         {
             TableName = tableName;
             tableClient = serviceClient.GetTableClient(tableName);
-            _ = CreateTableAsync();
+            CreateTableIfNot();
         }
 
         public void SetTableName(string tableName)
         {
             TableName = tableName;
             tableClient = serviceClient.GetTableClient(tableName);
-            _ = CreateTableAsync();
+            CreateTableIfNot();
         }
 
         public T InsertEntity<T>(T entity) where T : TableEntity
@@ -102,13 +102,14 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public List<T> QueryEntities<T>(string query) where T : TableEntity
+        public List<T> QueryEntities<T>(string query = null) where T : TableEntity
         {
             List<T> tEntities = new List<T>();
 
             try
             {
-                Pageable<T> queryResults = tableClient.Query<T>(query, 5000);
+                query = string.IsNullOrEmpty(query) ? null : query;
+                Pageable<T> queryResults = tableClient.Query<T>(query);
 
                 foreach (var entity in queryResults)
                 {
@@ -123,12 +124,13 @@ namespace DataAccess.AzureStorage.Table
             return tEntities;
         }
 
-        public T QueryEntity<T>(string query) where T : TableEntity
+        public T QueryEntity<T>(string query = null) where T : TableEntity
         {
             List<T> tEntities = new List<T>();
 
             try
             {
+                query = string.IsNullOrEmpty(query) ? null : query;
                 return tableClient.Query<T>(filter: query).FirstOrDefault();
             }
             catch (Exception ex)
@@ -137,10 +139,11 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-       public DynamicTableEntity QueryEntity(string query)
+       public DynamicTableEntity QueryEntity(string query = null)
         {
             try
             {
+                query = string.IsNullOrEmpty(query) ? null : query;
                 return tableClient.Query<DynamicTableEntity>(filter: query).FirstOrDefault();
             }
             catch (Exception ex)
