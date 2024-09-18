@@ -1,78 +1,46 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
 name: main-build CI
 
 on:
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:  # This allows manual triggering
   push:
     branches:
-      - master        # Build on push to master
-      - develop       # Build on push to develop
-      - 'feature/*'   # Build on feature branches
-      - 'release/*'   # Build on release branches
+      - master                      # Specific branch (master)
+      - develop                     # Specific branch (develop)
+      - 'feature/*'                 # Any branch that starts with 'feature/'
+      - 'release/*'                 # Any branch that starts with 'release/'
   pull_request:
     branches:
-      - master
-      - develop
-      - 'feature/*'
-      - 'release/*'
+      - master                      # Trigger on pull requests to the master branch
+      - develop                     # Trigger on pull requests to the develop branch
+      - 'feature/*'                 # PRs to feature branches
+      - 'release/*'                 # PRs to release branches
 
 jobs:
   build:
+
+    runs-on: windows-latest
+
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]  # Include macOS for broader testing
-        dotnet-version: ['6.x', '8.x', '4.8.x']  # Different versions of .NET
-
-    runs-on: ${{ matrix.os }}  # This is where the environment is specified
+        os: [windows-latest]
+        dotnet-version: ['6.x', '8.x', '4.8.x']  # .NET 6.x and 7.x support .NET Standard 2.0
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup .NET SDK for .NET Standard and .NET 8 projects
+      # Setup .NET SDK
       - name: Setup .NET Core SDK
-        if: matrix.dotnet-version != '4.8.x'
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      # Setup .NET Framework on Windows
-      - name: Setup .NET Framework SDK (Windows)
-        if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
-        run: |
-          # Install .NET Framework Developer Pack (Windows only)
-          powershell -Command "Invoke-WebRequest -Uri 'https://download.visualstudio.microsoft.com/download/pr/9b4c5e26-5797-4e1d-bc6e-17b9bb417016/3e29a6e0c2f1be9c34057fc9b7ea435d/ndp48-devpack-enu.exe' -OutFile 'ndp48-devpack-enu.exe'"
-          powershell -Command "Start-Process -FilePath './ndp48-devpack-enu.exe' -ArgumentList '/quiet /norestart' -Wait"
+      - name: Restore dependencies
+        run: dotnet restore ./src/DataAccess.AzureStorage.sln
 
-      # Restore dependencies for .NET Standard and .NET 8 projects
-      - name: Restore dependencies for .NET Standard/.NET 8 projects
-        run: |
-          dotnet restore ./src/DataAccess.AzureStorage.sln
-        if: matrix.dotnet-version != '4.8.x'
-
-      # Restore dependencies for .NET Framework
-      - name: Restore dependencies for .NET Framework (Windows)
-        run: |
-          nuget restore ./src/DataAccess.AzureStorage.sln
-        if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
-
-      # Build .NET Standard project
-      - name: Build .NET Standard project
-        run: dotnet build --configuration Release --no-restore ./src/DataAccess.AzureStorage/DataAccess.AzureStorage.csproj
-        if: matrix.dotnet-version != '4.8.x'
-
-      # Build .NET Framework project
-      - name: Build .NET Framework project (Windows)
-        run: |
-          msbuild ./src/AzureStorage.Dummy.Net481.MVC/AzureStorage.Dummy.Net481.MVC.csproj /p:Configuration=Release
-        if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
-               
-
-      # Build .NET 8.0 project
-      # - name: Build .NET 8.0 project
-      #  run: dotnet build --configuration Release --no-restore ./src/AzureStorage.Dummy.Net8.0.API/AzureStorage.Dummy.Net8.0.API.csproj
-      #  if: matrix.dotnet-version == '8.x'
-
-      # Optional: Run unit tests for .NET Standard and .NET Core/8 if applicable
-      #- name: Run tests (for .NET Standard/.NET Core/.NET 8)
-      #  run: dotnet test --configuration Release --no-build
-      #  if: matrix.dotnet-version != '4.8.x'
+      - name: Build project
+        run: dotnet build --configuration Release --no-restore ./src/DataAccess.AzureStorage.sln
+    
