@@ -16,8 +16,7 @@ on:
       - 'release/*'
 
 jobs:
-  build:    
-
+  build:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]  # Include macOS for broader testing
@@ -40,7 +39,9 @@ jobs:
       - name: Setup .NET Framework SDK (Windows)
         if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
         run: |
-          choco install dotnetfx --version=4.8.1
+          # Install .NET Framework Developer Pack (Windows only)
+          powershell -Command "Invoke-WebRequest -Uri 'https://download.visualstudio.microsoft.com/download/pr/9b4c5e26-5797-4e1d-bc6e-17b9bb417016/3e29a6e0c2f1be9c34057fc9b7ea435d/ndp48-devpack-enu.exe' -OutFile 'ndp48-devpack-enu.exe'"
+          powershell -Command "Start-Process -FilePath './ndp48-devpack-enu.exe' -ArgumentList '/quiet /norestart' -Wait"
 
       # Restore dependencies for .NET Standard and .NET 8 projects
       - name: Restore dependencies for .NET Standard/.NET 8 projects
@@ -64,6 +65,7 @@ jobs:
         run: |
           msbuild ./src/AzureStorage.Dummy.Net481.MVC/AzureStorage.Dummy.Net481.MVC.csproj /p:Configuration=Release
         if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
+               
 
       # Build .NET 8.0 project
       # - name: Build .NET 8.0 project
