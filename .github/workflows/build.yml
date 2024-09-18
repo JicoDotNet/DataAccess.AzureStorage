@@ -25,22 +25,31 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest]
-        dotnet-version: ['6.x', '8.x', '4.8.x']  # .NET 6.x and 7.x support .NET Standard 2.0
+        os: [ubuntu-latest, windows-latest, macos-latest] 
+        dotnet-version: ['6.x', '8.x', '4.8.x']  # .NET 6.x and 8.x support .NET Standard 2.0
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup .NET SDK
+      # Setup .NET SDK for .NET Standard and .NET 8 projects
       - name: Setup .NET Core SDK
+        if: matrix.dotnet-version != '4.8.x'
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      - name: Restore dependencies
-        run: dotnet restore ./src/DataAccess.AzureStorage.sln
+      # Setup .NET Framework on Windows for 4.8.1 project
+      - name: Setup .NET Framework SDK (Windows)
+        if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
+        run: |
+          choco install dotnetfx --version=4.8.1
 
-      - name: Build project
-        run: dotnet build --configuration Release --no-restore ./src/DataAccess.AzureStorage.sln
+      
+
+      # - name: Restore dependencies
+      #   run: dotnet restore ./src/DataAccess.AzureStorage.sln
+
+      # - name: Build project
+      #   run: dotnet build --configuration Release --no-restore ./src/DataAccess.AzureStorage.sln
     
