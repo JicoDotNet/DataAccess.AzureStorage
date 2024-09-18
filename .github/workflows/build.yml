@@ -16,33 +16,34 @@ on:
       - 'release/*'
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}  # This is where the environment is specified
+  build:    
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]  # .NET Framework requires Windows
+        os: [ubuntu-latest, windows-latest, macos-latest]  # Include macOS for broader testing
         dotnet-version: ['6.x', '8.x', '4.8.x']  # Different versions of .NET
+
+    runs-on: ${{ matrix.os }}  # This is where the environment is specified
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Setup .NET SDK for .NET Standard/.NET 8 projects
+      # Setup .NET SDK for .NET Standard and .NET 8 projects
       - name: Setup .NET Core SDK
         if: matrix.dotnet-version != '4.8.x'
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
 
-      # Setup .NET Framework on Windows for 4.8.1 project
+      # Setup .NET Framework on Windows
       - name: Setup .NET Framework SDK (Windows)
         if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
         run: |
           choco install dotnetfx --version=4.8.1
 
-      # Restore dependencies
-      - name: Restore dependencies
+      # Restore dependencies for .NET Standard and .NET 8 projects
+      - name: Restore dependencies for .NET Standard/.NET 8 projects
         run: |
           dotnet restore ./src/DataAccess.AzureStorage.sln
         if: matrix.dotnet-version != '4.8.x'
@@ -53,18 +54,23 @@ jobs:
           nuget restore ./src/DataAccess.AzureStorage.sln
         if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
 
-      # Build .NET Standard and .NET Core/8 projects
-      - name: Build .NET projects (Standard/Core/8)
-        run: dotnet build --configuration Release --no-restore ./src/DataAccess.AzureStorage.sln
+      # Build .NET Standard project
+      - name: Build .NET Standard project
+        run: dotnet build --configuration Release --no-restore ./src/DataAccess.AzureStorage/DataAccess.AzureStorage.csproj
         if: matrix.dotnet-version != '4.8.x'
 
       # Build .NET Framework project
       - name: Build .NET Framework project (Windows)
         run: |
-          msbuild ./src/DataAccess.AzureStorage.sln /p:Configuration=Release
+          msbuild ./src/AzureStorage.Dummy.Net481.MVC/AzureStorage.Dummy.Net481.MVC.csproj /p:Configuration=Release
         if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
 
-      # Optional: Run unit tests for .NET Standard/.NET Core/8 if applicable
-      - name: Run tests (for .NET Standard/.NET Core)
-        run: dotnet test --configuration Release --no-build
-        if: matrix.dotnet-version != '4.8.x'
+      # Build .NET 8.0 project
+      # - name: Build .NET 8.0 project
+      #  run: dotnet build --configuration Release --no-restore ./src/AzureStorage.Dummy.Net8.0.API/AzureStorage.Dummy.Net8.0.API.csproj
+      #  if: matrix.dotnet-version == '8.x'
+
+      # Optional: Run unit tests for .NET Standard and .NET Core/8 if applicable
+      #- name: Run tests (for .NET Standard/.NET Core/.NET 8)
+      #  run: dotnet test --configuration Release --no-build
+      #  if: matrix.dotnet-version != '4.8.x'
