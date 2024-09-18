@@ -42,8 +42,9 @@ jobs:
       # Setup .NET Framework on Windows for 4.8.1 project
       - name: Setup .NET Framework SDK (Windows)
         if: matrix.os == 'windows-latest' && matrix.dotnet-version == '4.8.x'
-        run: |
-          choco install dotnetfx --version=4.8.1
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
 
       
 
