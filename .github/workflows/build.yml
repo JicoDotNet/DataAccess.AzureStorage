@@ -17,6 +17,7 @@ on:
 
 jobs:
   build:
+    runs-on: ${{ matrix.os }}  # This is where the environment is specified
 
     strategy:
       matrix:
