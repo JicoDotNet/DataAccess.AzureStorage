@@ -28,35 +28,32 @@ jobs:
         solution: ['src/DataAccess.AzureStorage.sln']
 
     steps:
-      # Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    # Checkout the repository
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      # Set up .NET SDK (for .NET Standard 2.0 and .NET 8.0)
-      - name: Set up .NET 8.0 SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0.x'
+    # Set up .NET SDK (for .NET Standard 2.0 and .NET 8.0)
+    - name: Set up .NET 8.0 SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
 
-      - name: Set up .NET 6.0 SDK
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
+    # Install Visual Studio Build Tools (to build .NET Framework projects)
+    - name: Install Visual Studio
+      uses: microsoft/setup-msbuild@v1
+      with:
+        vs-version: '17.0'  # Visual Studio 2022
 
-      # Install MSBuild (for .NET Framework 4.8.1)
-      - name: Install MSBuild
-        uses: microsoft/setup-msbuild@v1
+    # Restore .NET dependencies for .NET Standard and .NET Core projects
+    - name: Restore .NET dependencies
+      run: dotnet restore ${{ matrix.solution }}
 
-      # Restore .NET dependencies
-      - name: Restore .NET dependencies
-        run: dotnet restore ${{ matrix.solution }}
+    # Build .NET Standard and .NET Core projects (use dotnet build)
+    - name: Build .NET Standard and .NET Core projects
+      run: dotnet build ${{ matrix.solution }} --configuration Release --no-restore
 
-      # Build .NET Standard and .NET Core projects
-      - name: Build .NET Standard and .NET Core projects
-        run: dotnet build ${{ matrix.solution }} --configuration Release --no-restore
-
-       # Build .NET Framework project (with MSBuild)
-      - name: Build .NET Framework project
-        run: |
-          msbuild src/AzureStorage.Dummy.Net481.MVC/AzureStorage.Dummy.Net481.MVC.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:RestorePackages=false
+    # Build .NET Framework project (use MSBuild)
+    - name: Build .NET Framework project
+      run: |
+        msbuild src/AzureStorage.Dummy.Net481.MVC/AzureStorage.Dummy.Net481.MVC.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:RestorePackages=false
     
