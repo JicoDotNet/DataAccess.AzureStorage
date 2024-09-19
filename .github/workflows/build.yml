@@ -32,17 +32,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # Set up .NET SDK (for .NET Standard 2.0 and .NET 8.0)
+    # Install .NET SDK (for .NET Standard 2.0 and .NET 8.0)
     - name: Set up .NET 8.0 SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
 
-    # Install Visual Studio Build Tools (to build .NET Framework projects)
-    - name: Install Visual Studio
-      uses: microsoft/setup-msbuild@v1
-      with:
-        vs-version: '17.0'  # Visual Studio 2022
+    # Install Visual Studio Build Tools with ASP.NET MVC and Web Development workloads
+    - name: Install Visual Studio Build Tools
+      run: |
+        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Workload.WebBuildTools --add Microsoft.VisualStudio.Component.Web --add Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions --includeRecommended --includeOptional" --no-progress
 
     # Restore .NET dependencies for .NET Standard and .NET Core projects
     - name: Restore .NET dependencies
