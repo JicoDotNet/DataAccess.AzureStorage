@@ -29,8 +29,15 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
         public ActionResult Show()
         {
             AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
-            List<TableTestModels> models = tableAccess.QueryEntities<TableTestModels>();
+            List<TableTestModels> models = tableAccess.RetrieveEntities<TableTestModels>();
             return View(models);
+        }
+
+        public ActionResult Details(string id)
+        {
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            List<TableTestModels> models = tableAccess.RetrieveEntities<TableTestModels>("RowKey eq '" + id + "'");
+            return View("Show", models);
         }
     }
 }

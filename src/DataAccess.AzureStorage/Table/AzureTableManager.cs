@@ -9,10 +9,10 @@ namespace DataAccess.AzureStorage.Table
         private protected TableServiceClient serviceClient { get; private set; }
 
         private protected TableClient tableClient;
-        private protected AzureTableManager(string connectionString) : base(connectionString) 
+        private protected AzureTableManager(string connectionString) : base(connectionString)
         {
             try
-            {                
+            {
                 serviceClient = new TableServiceClient(AzureStorageConnectionString);
             }
             catch (Exception ex)
@@ -21,7 +21,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        private protected void CreateTableIfNot()
+        private protected void CreateTable()
         {
             try
             {

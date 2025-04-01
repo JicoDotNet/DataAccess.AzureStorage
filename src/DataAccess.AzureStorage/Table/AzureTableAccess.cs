@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace DataAccess.AzureStorage.Table
 {
-    public sealed class AzureTableAccess : AzureTableManager, IAzureTableAccess 
+    public sealed class AzureTableAccess : AzureTableManager, IAzureTableAccess
     {
         public string TableName { get; private set; }
         public AzureTableAccess(string tableName, string connectionString)
@@ -14,14 +14,14 @@ namespace DataAccess.AzureStorage.Table
         {
             TableName = tableName;
             tableClient = serviceClient.GetTableClient(tableName);
-            CreateTableIfNot();
+            CreateTable();
         }
 
         public void SetTableName(string tableName)
         {
             TableName = tableName;
             tableClient = serviceClient.GetTableClient(tableName);
-            CreateTableIfNot();
+            CreateTable();
         }
 
         public T InsertEntity<T>(T entity) where T : TableEntity
@@ -37,7 +37,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public DynamicTableEntity InsertEntity<T>(DynamicTableEntity entity) where T : ITableEntity
+        public DynamicTableEntity InsertEntity<T>(DynamicTableEntity entity) where T : IDynamicTableEntity
         {
             try
             {
@@ -63,10 +63,22 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
+        public T UpdateEntity<T>(T entity) where T : TableEntity
+        {
+            try
+            {
+                return ReplaceEntity(entity);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public T MergeEntity<T>(T entity) where T : TableEntity
         {
             try
-            {                
+            {
                 tableClient.UpdateEntity(entity, ETag.All, TableUpdateMode.Merge);
                 return entity;
             }
@@ -76,12 +88,12 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public T DeleteEntity<T>(T entity) where T : TableEntity
+        public bool DeleteEntity<T>(T entity) where T : TableEntity
         {
             try
             {
                 tableClient.DeleteEntity(entity);
-                return entity;
+                return true;
             }
             catch (Exception ex)
             {
@@ -102,36 +114,41 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public List<T> QueryEntities<T>(string query = null) where T : TableEntity
+        public List<T> RetrieveEntities<T>(string query = null) where T : TableEntity
         {
-            List<T> tEntities = new List<T>();
-
+            List<T> entities = new List<T>();
             try
-            {
-                query = string.IsNullOrEmpty(query) ? null : query;
-                Pageable<T> queryResults = tableClient.Query<T>(query);
-
-                foreach (var entity in queryResults)
+            {                
+                if (string.IsNullOrEmpty(query))
                 {
-                    tEntities.Add(entity);
+                    foreach (T entity in tableClient.Query<T>())
+                    {
+                        entities.Add(entity);
+                    }
                 }
+                else
+                {                   
+                    foreach (T entity in tableClient.Query<T>(query))
+                    {
+                        entities.Add(entity);
+                    }
+                }                
             }
             catch (Exception ex)
             {
                 throw ex;
             }
 
-            return tEntities;
+            return entities;
         }
 
-        public T QueryEntity<T>(string query = null) where T : TableEntity
+        public T RetrieveEntity<T>(string query) where T : TableEntity
         {
             List<T> tEntities = new List<T>();
 
             try
             {
-                query = string.IsNullOrEmpty(query) ? null : query;
-                return tableClient.Query<T>(filter: query).FirstOrDefault();
+                return RetrieveEntities<T>(query).FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -139,11 +156,10 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-       public DynamicTableEntity QueryEntity(string query = null)
+        public DynamicTableEntity RetrieveEntity(string query)
         {
             try
             {
-                query = string.IsNullOrEmpty(query) ? null : query;
                 return tableClient.Query<DynamicTableEntity>(filter: query).FirstOrDefault();
             }
             catch (Exception ex)

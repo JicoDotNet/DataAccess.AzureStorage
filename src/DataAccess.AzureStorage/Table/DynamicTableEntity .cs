@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DataAccess.AzureStorage.Table
 {
-    public class DynamicTableEntity : TableEntity
+    public abstract class DynamicTableEntity : TableEntity, IDynamicTableEntity
     {
         // Dictionary to hold dynamic properties
         public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
@@ -32,7 +32,7 @@ namespace DataAccess.AzureStorage.Table
 
         public IDictionary<string, object> WriteEntity()
         {
-            var entity = new Dictionary<string, object>
+            Dictionary<string, object> entity = new Dictionary<string, object>
             {
                 [nameof(PartitionKey)] = PartitionKey,
                 [nameof(RowKey)] = RowKey,
