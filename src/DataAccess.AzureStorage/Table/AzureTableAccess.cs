@@ -37,19 +37,6 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public DynamicTableEntity InsertEntity<T>(DynamicTableEntity entity) where T : IDynamicTableEntity
-        {
-            try
-            {
-                tableClient.UpsertEntity(entity, TableUpdateMode.Merge);
-                return entity;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public T ReplaceEntity<T>(T entity) where T : TableEntity
         {
             try
@@ -156,6 +143,18 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
+        public DynamicTableEntity InsertEntity<T>(DynamicTableEntity entity) where T : IDynamicTableEntity
+        {
+            try
+            {
+                tableClient.UpsertEntity(entity, TableUpdateMode.Merge);
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public DynamicTableEntity RetrieveEntity(string query)
         {
             try

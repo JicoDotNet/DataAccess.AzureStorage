@@ -8,7 +8,7 @@ namespace AzureStorage.Dummy.Net481.MVC.Models
 {
     public class TableTestModels : TableEntity
     {
-        public int Age { get; set; }
+        public int? Age { get; set; }
         public string Name { get; set; }
     }
 }

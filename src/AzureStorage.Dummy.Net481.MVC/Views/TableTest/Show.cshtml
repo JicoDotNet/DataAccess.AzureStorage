@@ -3,6 +3,11 @@
 @{
     ViewBag.Title = "Show";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
 }
 
 <h2>Show</h2>
@@ -24,7 +29,7 @@
         <th>
             @Html.DisplayNameFor(model => model.Name)
         </th>
-        <th></th>
+        <th>Actions</th>
     </tr>
 
     @foreach (var item in Model)
@@ -43,9 +48,11 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
                 @Html.ActionLink("Details", "Details", new { id = item.RowKey }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("Delete", "Delete", new { id = item.RowKey }) |
+                @Html.ActionLink("Update", "Update", new { id = item.RowKey }) |
+                @Html.ActionLink("Replace", "Replace", new { id = item.RowKey }) |
+                @Html.ActionLink("Merge", "Merge", new { id = item.RowKey }) |
             </td>
         </tr>
     }

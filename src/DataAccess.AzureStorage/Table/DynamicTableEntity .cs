@@ -1,15 +1,13 @@
 ﻿using Azure;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DataAccess.AzureStorage.Table
 {
     public abstract class DynamicTableEntity : TableEntity, IDynamicTableEntity
     {
-        // Dictionary to hold dynamic properties
         public Dictionary<string, object> Properties { get; set; } = new Dictionary<string, object>();
-
-        // Implementation of the interface methods
         public void ReadEntity(IDictionary<string, object> properties)
         {
             PartitionKey = properties[nameof(PartitionKey)].ToString();
@@ -17,8 +15,7 @@ namespace DataAccess.AzureStorage.Table
             Timestamp = properties.ContainsKey(nameof(Timestamp)) ? (DateTimeOffset?)properties[nameof(Timestamp)] : null;
             ETag = properties.ContainsKey(nameof(ETag)) ? (ETag)properties[nameof(ETag)] : default;
 
-            // Load dynamic properties
-            foreach (var property in properties)
+            foreach (KeyValuePair<string, object> property in properties)
             {
                 if (property.Key != nameof(PartitionKey) &&
                     property.Key != nameof(RowKey) &&
@@ -40,13 +37,36 @@ namespace DataAccess.AzureStorage.Table
                 [nameof(ETag)] = ETag
             };
 
-            // Add dynamic properties
-            foreach (var property in Properties)
+            foreach (KeyValuePair<string, object> property in Properties)
             {
-                entity[property.Key] = property.Value;
+                if (IsValidType(property.Value))
+                {
+                    entity[property.Key] = property.Value;
+                }
             }
-
             return entity;
+        }
+        private bool IsValidType(object value)
+        {
+            return Enum.GetValues(typeof(EdmType))
+                .Cast<EdmType>()
+                .Select(GetClrType)
+                .Any(type => type.IsInstanceOfType(value));
+        }
+
+        private Type GetClrType(EdmType dataType)
+        {
+            return dataType switch
+            {
+                EdmType.String => typeof(string),
+                EdmType.Binary => typeof(byte[]),
+                EdmType.Boolean => typeof(bool),
+                EdmType.DateTime => typeof(DateTime),
+                EdmType.Double => typeof(double),
+                EdmType.Int32 => typeof(int),
+                EdmType.Int64 => typeof(long),
+                _ => throw new ArgumentOutOfRangeException(nameof(dataType), "Unsupported data type")
+            };
         }
     }
 }

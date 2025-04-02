@@ -5,30 +5,34 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.AzureStorage.Table
-{
-    public enum EdmType
+{    public enum EdmType
     {
-        //
-        // Summary:
-        //     Represents fixed- or variable-length character data.
+        /// <summary>
+        /// Represents fixed- or variable-length character data.
+        /// </summary>
         String,
-        //
-        // Summary:
-        //     Represents fixed- or variable-length binary data.
+
+        /// <summary>
+        /// Represents fixed- or variable-length binary data.
+        /// </summary>
         Binary,
-        //
-        // Summary:
-        //     Represents the mathematical concept of binary-valued logic.
+
+        /// <summary>
+        /// Represents the mathematical concept of binary-valued logic.
+        /// </summary>
         Boolean,
-        //
-        // Summary:
-        //     Represents date and time.
+
+        /// <summary>
+        /// Represents date and time.
+        /// </summary>
         DateTime,
-        //
-        // Summary:
-        //     Represents a floating point number with 15 digits precision that can represent
-        //     values with approximate range of +/- 2.23e -308 through +/- 1.79e +308.
+
+        /// <summary>
+        /// Represents a floating point number with 15 digits precision that can represent
+        ///     values with approximate range of +/- 2.23e -308 through +/- 1.79e +308.
+        /// </summary>
         Double,
+
         //
         // Summary:
         //     Represents a 16-byte (128-bit) unique identifier value.
