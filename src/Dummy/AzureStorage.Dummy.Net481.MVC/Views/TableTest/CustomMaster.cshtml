@@ -1,4 +1,5 @@
-﻿@model IEnumerable<AzureStorage.Dummy.Net481.MVC.Models.CustomPropertyMaster>
+﻿@using AzureStorage.Dummy.Net481.MVC.Models
+@model IEnumerable<CustomPropertyMaster>
 
 @{
     ViewBag.Title = "Custom Master";
@@ -14,6 +15,7 @@
 
 <p>
     @Html.ActionLink("Create New Master", "CustomMasterAdd")
+    @Html.ActionLink("Custom Property Insert", "CustomProperty")
 </p>
 <table class="table">
     <tr>
