@@ -3,15 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using DataAccess.AzureStorage.Table;
-using System.Web.Configuration;
 using System.Text.RegularExpressions;
 using System.Linq;
-using System.Runtime.Remoting.Contexts;
 
 namespace AzureStorage.Dummy.Net481.MVC.Controllers
 {
     public class TableTestController : Controller
     {
+        string ConnectionString = Environment.GetEnvironmentVariable("AzureStorageConnection");
+
         public ActionResult Add()
         {
             return View();
@@ -20,35 +20,35 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
         [HttpPost]
         public ActionResult Add(TableTestModels models)
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             tableAccess.InsertEntity(models);
             return RedirectToAction("Add");
         }
 
         public ActionResult Show()
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             List<TableTestModels> models = tableAccess.RetrieveEntities<TableTestModels>();
             return View(models);
         }
 
         public ActionResult Details(string id)
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             List<TableTestModels> models = tableAccess.RetrieveEntities<TableTestModels>("RowKey eq '" + id + "'");
             return View("Show", models);
         }
 
         public ActionResult Delete(string id)
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             TableTestModels model = tableAccess.RetrieveEntity<TableTestModels>("RowKey eq '" + id + "'");
             tableAccess.DeleteEntity(model);
             return RedirectToAction("Show");
         }
         public ActionResult Update(string id)
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             TableTestModels model = tableAccess.RetrieveEntity<TableTestModels>("RowKey eq '" + id + "'");
             model.Name = model.Name + Guid.NewGuid().ToString();
             tableAccess.UpdateEntity(model);
@@ -56,7 +56,7 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
         }
         public ActionResult Replace(string id)
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             TableTestModels model = tableAccess.RetrieveEntity<TableTestModels>("RowKey eq '" + id + "'");
             model.Age = null;
             tableAccess.ReplaceEntity(model);
@@ -64,7 +64,7 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
         }
         public ActionResult Merge(string id)
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             TableTestModels model = tableAccess.RetrieveEntity<TableTestModels>("RowKey eq '" + id + "'");
             model.Name = model.Name + Guid.NewGuid().ToString();
             model.Age = null;
@@ -74,13 +74,13 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
 
         public ActionResult CustomMaster()
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             List<CustomPropertyMaster> models = tableAccess.RetrieveEntities<CustomPropertyMaster>("PartitionKey eq 'AmarPropertyMaster'");
             return View(models);
         }
         public ActionResult CustomMasterAdd()
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             string Rk = Regex.Replace( Guid.NewGuid().ToString(), @"[^a-zA-Z0-9]", "");
             Random random = new Random();
             Array values = Enum.GetValues(typeof(EdmType));
@@ -105,7 +105,7 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
 
         public ActionResult CustomProperty()
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             List<CustomPropertyMaster> models = tableAccess.RetrieveEntities<CustomPropertyMaster>("PartitionKey eq 'AmarPropertyMaster'");
             return View(models);
         }
@@ -113,7 +113,7 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
         [HttpPost]
         public ActionResult CustomPropertySet(FormCollection form)
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             IDictionary<string, object> formDictionary =
                 form.AllKeys.ToDictionary(key => key, value => (object)form[value]);
 
@@ -188,7 +188,7 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
 
         public ActionResult CustomPropertyGetAll()
         {
-            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             List<DynamicTableEntity> dynamicTableEntities  = tableAccess.RetrieveEntities("PartitionKey eq 'AmarCustomPropertyData'");
             return View(dynamicTableEntities);
         }
