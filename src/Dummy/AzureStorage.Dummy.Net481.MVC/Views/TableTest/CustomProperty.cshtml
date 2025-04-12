@@ -9,46 +9,50 @@
 
 @if (Model != null && Model.Count > 0)
 {
-    <table>
-        @foreach (CustomPropertyMaster customProperty in Model)
-        {
-            <tr>
-                <td>
-                    <label>@customProperty.LabelName</label>
-                    @if (customProperty.DataType == EdmType.String.ToString())
-                    {
-                        <input type="text" placeholder="@customProperty.LabelName"
-                               @if (customProperty.IsRequired) { <text> required </text> }
-                               name="@customProperty.ColumnName" />
-                    }
-                    else if (customProperty.DataType == EdmType.Double.ToString())
-                    {
-                        <input type="number" placeholder="@customProperty.LabelName"
-                               @if (customProperty.IsRequired) { <text> required </text> }
-                               name="@customProperty.ColumnName" />
-                    }
-                    else if (customProperty.DataType == EdmType.Int32.ToString())
-                    {
-                        <input type="number" placeholder="@customProperty.LabelName"
-                               @if (customProperty.IsRequired) { <text> required </text> }
-                               name="@customProperty.ColumnName" />
-                    }
-                    else if (customProperty.DataType == EdmType.Int64.ToString())
-                    {
-                        <input type="number" placeholder="@customProperty.LabelName"
-                               @if (customProperty.IsRequired) { <text> required </text> }
-                               name="@customProperty.ColumnName" />
-                    }
-                    else if (customProperty.DataType == EdmType.DateTime.ToString())
-                    {
-                        <small>Day/Month/Year</small>
-                        <input type="text" placeholder="@customProperty.LabelName"
-                               @if (customProperty.IsRequired) { <text> required </text> }
-                               name="@customProperty.ColumnName" />
-                    }
-                </td>
-            </tr>
-        }
-    </table>
+    using (Html.BeginForm("CustomPropertySet", "TableTest", FormMethod.Post, new { autocomplete = "off" }))
+    {
+        <table>
+            @foreach (CustomPropertyMaster customProperty in Model)
+            {
+                <tr>
+                    <td>
+                        <label>@customProperty.LabelName</label>
+                        @if (customProperty.DataType == EdmType.String.ToString())
+                        {
+                            <input type="text" placeholder="@customProperty.LabelName"
+                                   @if (customProperty.IsRequired) { <text> required </text> }
+                                   name="@customProperty.ColumnName" />
+                        }
+                        else if (customProperty.DataType == EdmType.Double.ToString())
+                        {
+                            <input type="number" placeholder="@customProperty.LabelName"
+                                   @if (customProperty.IsRequired) { <text> required </text> }
+                                   name="@customProperty.ColumnName" />
+                        }
+                        else if (customProperty.DataType == EdmType.Int32.ToString())
+                        {
+                            <input type="number" placeholder="@customProperty.LabelName"
+                                   @if (customProperty.IsRequired) { <text> required </text> }
+                                   name="@customProperty.ColumnName" />
+                        }
+                        else if (customProperty.DataType == EdmType.Int64.ToString())
+                        {
+                            <input type="number" placeholder="@customProperty.LabelName"
+                                   @if (customProperty.IsRequired) { <text> required </text> }
+                                   name="@customProperty.ColumnName" />
+                        }
+                        else if (customProperty.DataType == EdmType.DateTime.ToString())
+                        {
+                            <small>Day/Month/Year</small>
+                            <input type="text" placeholder="@customProperty.LabelName"
+                                   @if (customProperty.IsRequired) { <text> required </text> }
+                                   name="@customProperty.ColumnName" />
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+        <button type="submit"> Save</button>
+    }
     <hr />
 }

@@ -151,6 +151,7 @@
     <Content Include="Views\TableTest\CustomMaster.cshtml" />
     <Content Include="Views\TableTest\CustomProperty.cshtml" />
     <Content Include="Views\TableTest\Show.cshtml" />
+    <Content Include="Views\TableTest\CustomPropertyGetAll.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

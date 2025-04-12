@@ -15,7 +15,10 @@
 
 <p>
     @Html.ActionLink("Create New Master", "CustomMasterAdd")
+    <br />
     @Html.ActionLink("Custom Property Insert", "CustomProperty")
+    <br />
+    @Html.ActionLink("Custom Property Show", "CustomPropertyGetAll")
 </p>
 <table class="table">
     <tr>
@@ -68,11 +71,6 @@
                 @Html.DisplayFor(modelItem => item.IsRequired)
             </td>
             <td>
-                @*@Html.ActionLink("Details", "Details", new { id = item.RowKey }) |
-            @Html.ActionLink("Delete", "Delete", new { id = item.RowKey }) |
-            @Html.ActionLink("Update", "Update", new { id = item.RowKey }) |
-            @Html.ActionLink("Replace", "Replace", new { id = item.RowKey }) |
-            @Html.ActionLink("Merge", "Merge", new { id = item.RowKey }) |*@
             </td>
         </tr>
     }

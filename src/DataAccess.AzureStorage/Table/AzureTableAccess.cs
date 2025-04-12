@@ -143,11 +143,17 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public DynamicTableEntity InsertEntity<T>(DynamicTableEntity entity) where T : IDynamicTableEntity
+        public DynamicTableEntity InsertEntity(DynamicTableEntity entity)
         {
             try
             {
-                tableClient.UpsertEntity(entity, TableUpdateMode.Merge);
+                var tableEntity = new Azure.Data.Tables.TableEntity(entity.PartitionKey, entity.RowKey);
+
+                foreach (var prop in entity.Properties)
+                {
+                    tableEntity[prop.Key] = prop.Value;
+                }
+                tableClient.AddEntity(tableEntity);
                 return entity;
             }
             catch (Exception ex)
@@ -155,11 +161,40 @@ namespace DataAccess.AzureStorage.Table
                 throw ex;
             }
         }
+        public List<DynamicTableEntity> RetrieveEntities(string query)
+        {
+            try
+            {
+                List<Azure.Data.Tables.TableEntity> entities =
+                    tableClient.Query<Azure.Data.Tables.TableEntity>(filter: query).ToList();
+
+                if (entities == null || entities.Count == 0) return null;
+                List<DynamicTableEntity> dynamicTableEntities = new List<DynamicTableEntity>();
+                foreach (var entity in entities)
+                {
+                    DynamicTableEntity dynamicTableEntity = new DynamicTableEntity();
+                    dynamicTableEntity.SetEntity(entity);
+                    dynamicTableEntities.Add(dynamicTableEntity);
+                }
+                return dynamicTableEntities;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public DynamicTableEntity RetrieveEntity(string query)
         {
             try
             {
-                return tableClient.Query<DynamicTableEntity>(filter: query).FirstOrDefault();
+                Azure.Data.Tables.TableEntity entity =
+                    tableClient.Query<Azure.Data.Tables.TableEntity>(filter: query).FirstOrDefault();
+
+                if (entity == null) return null;
+                DynamicTableEntity dynamicTableEntity = new DynamicTableEntity();
+                dynamicTableEntity.SetEntity(entity);
+                return dynamicTableEntity;
             }
             catch (Exception ex)
             {

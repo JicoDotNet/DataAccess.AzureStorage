@@ -1,14 +1,12 @@
 ﻿using AzureStorage.Dummy.Net481.MVC.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.ModelBinding;
 using System.Web.Mvc;
 using DataAccess.AzureStorage.Table;
 using System.Web.Configuration;
-using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
+using System.Linq;
+using System.Runtime.Remoting.Contexts;
 
 namespace AzureStorage.Dummy.Net481.MVC.Controllers
 {
@@ -77,20 +75,20 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
         public ActionResult CustomMaster()
         {
             AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
-            List<CustomPropertyMaster> models = tableAccess.RetrieveEntities<CustomPropertyMaster>("PartitionKey eq 'AmarProperty'");
+            List<CustomPropertyMaster> models = tableAccess.RetrieveEntities<CustomPropertyMaster>("PartitionKey eq 'AmarPropertyMaster'");
             return View(models);
         }
         public ActionResult CustomMasterAdd()
         {
             AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
-            string Rk = Guid.NewGuid().ToString();
+            string Rk = Regex.Replace( Guid.NewGuid().ToString(), @"[^a-zA-Z0-9]", "");
             Random random = new Random();
             Array values = Enum.GetValues(typeof(EdmType));
             EdmType edmType = (EdmType)values.GetValue(random.Next(values.Length));
             int rnd = random.Next(1111, 9999);
             CustomPropertyMaster customPropertyMaster = new CustomPropertyMaster()
             {
-                PartitionKey = "AmarProperty",
+                PartitionKey = "AmarPropertyMaster",
                 RowKey = Rk,
                 LabelName = "Label & Name " + rnd + " #:",
                 DataType = edmType.ToString(),
@@ -108,8 +106,91 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
         public ActionResult CustomProperty()
         {
             AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
-            List<CustomPropertyMaster> models = tableAccess.RetrieveEntities<CustomPropertyMaster>("PartitionKey eq 'AmarProperty'");
+            List<CustomPropertyMaster> models = tableAccess.RetrieveEntities<CustomPropertyMaster>("PartitionKey eq 'AmarPropertyMaster'");
             return View(models);
+        }
+
+        [HttpPost]
+        public ActionResult CustomPropertySet(FormCollection form)
+        {
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            IDictionary<string, object> formDictionary =
+                form.AllKeys.ToDictionary(key => key, value => (object)form[value]);
+
+            List<CustomPropertyMaster> customProperties = tableAccess.RetrieveEntities<CustomPropertyMaster>("PartitionKey eq 'AmarPropertyMaster'");
+            
+            IDictionary<string, object> customPropertiesValue = new Dictionary<string, object>();
+
+            foreach (CustomPropertyMaster dm in customProperties)
+            {
+                if (dm.DataType == EdmType.String.ToString())
+                {
+                    if (formDictionary[dm.ColumnName] != null
+                                && !string.IsNullOrEmpty(formDictionary[dm.ColumnName]?.ToString()))
+                    {
+                        customPropertiesValue.Add(dm.ColumnName, formDictionary[dm.ColumnName].ToString());
+                    }
+                }
+                if (dm.DataType == EdmType.Double.ToString())
+                {
+                    try
+                    {
+                        customPropertiesValue.Add(dm.ColumnName, Convert.ToDouble(formDictionary[dm.ColumnName]));
+                    }
+                    catch { }
+                }
+                if (dm.DataType == EdmType.Int32.ToString())
+                {
+                    try
+                    {
+                        customPropertiesValue.Add(dm.ColumnName, Convert.ToInt32(formDictionary[dm.ColumnName]));
+                    }
+                    catch { }
+                }
+                if (dm.DataType == EdmType.Int64.ToString())
+                {
+                    try
+                    {
+                        customPropertiesValue.Add(dm.ColumnName, Convert.ToInt64(formDictionary[dm.ColumnName]));
+                    }
+                    catch { }
+                }
+                if (dm.DataType == EdmType.DateTime.ToString())
+                {
+                    try
+                    {
+                        if (formDictionary[dm.ColumnName] != null
+                            && !string.IsNullOrEmpty(formDictionary[dm.ColumnName]?.ToString()))
+                        {
+                            DateTime.TryParseExact(formDictionary[dm.ColumnName]?.ToString(),
+                                                    "dd/MM/yyyy",
+                                                    System.Globalization.CultureInfo.InvariantCulture,
+                                                    System.Globalization.DateTimeStyles.None,
+                                                    out DateTime PropDateValue);
+
+                            PropDateValue = DateTime.SpecifyKind(PropDateValue, DateTimeKind.Utc);
+                            customPropertiesValue.Add(dm.ColumnName, PropDateValue);
+                        }
+                    }
+                    catch { }
+                }
+            }
+
+            DynamicTableEntity dynamicProperty = new DynamicTableEntity();
+            dynamicProperty.PartitionKey = "AmarCustomPropertyData";
+            dynamicProperty.RowKey = Guid.NewGuid().ToString();
+            dynamicProperty.Set(customPropertiesValue);
+
+            tableAccess.InsertEntity(dynamicProperty);
+
+            return RedirectToAction("CustomPropertyGet");
+        }
+
+        public ActionResult CustomPropertyGetAll()
+        {
+            AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", WebConfigurationManager.ConnectionStrings["AzureStorageConnection"].ToString());
+            List<DynamicTableEntity> dynamicTableEntities  = tableAccess.RetrieveEntities("PartitionKey eq 'AmarCustomPropertyData'");
+            return View(dynamicTableEntities);
         }
     }
 }
