@@ -41,7 +41,7 @@ jobs:
     # Install Visual Studio Build Tools with ASP.NET MVC and Web Development workloads
     - name: Install Visual Studio Build Tools
       run: |
-        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Workload.WebBuildTools --add Microsoft.VisualStudio.Component.Web --add Microsoft.VisualStudio.ComponentGroup.WebToolsExtensions --includeRecommended --includeOptional" --no-progress
+        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Workload.WebBuildTools --add Microsoft.Net.Component.4.8.SDK --add Microsoft.Net.ComponentGroup.DevelopmentPrerequisites --includeRecommended --includeOptional" --no-progress
 
     # Restore .NET dependencies for .NET Standard and .NET Core projects
     - name: Restore .NET dependencies
@@ -54,5 +54,5 @@ jobs:
     # Build .NET Framework project (use MSBuild)
     - name: Build .NET Framework project
       run: |
-        msbuild src/AzureStorage.Dummy.Net481.MVC/AzureStorage.Dummy.Net481.MVC.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:RestorePackages=false
+        msbuild src/Dummy/AzureStorage.Dummy.Net481.MVC/AzureStorage.Dummy.Net481.MVC.csproj /p:Configuration=Release /p:Platform="Any CPU" /p:RestorePackages=false
     
