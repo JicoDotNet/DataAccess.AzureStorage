@@ -1,0 +1,65 @@
+﻿@using DataAccess.AzureStorage.Blob 
+@model List<IBlobDetails>
+@{
+    ViewBag.Title = "Show";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+}
+
+<h2>Show</h2>
+
+<p>
+    @Html.ActionLink("Upload New", "Add")
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            Path
+        </th>
+        <th>
+            ContentType
+        </th>
+        <th>
+            LastModified
+        </th>
+        <th>
+            AbsoluteUri
+        </th>
+        <th>
+            ContentLength
+        </th>
+        <th>
+            Action
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Path)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContentType)
+            </td>
+            <td>
+                @item.LastModified.ToString()
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AbsoluteUri)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ContentLength)
+            </td>
+            <td>
+                @Html.ActionLink("Download", "Download", new { path = item.AbsoluteUri })
+            </td>
+        </tr>
+    }
+
+</table>

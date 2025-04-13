@@ -7,6 +7,6 @@ namespace DataAccess.AzureStorage.Blob
         Stream FileStream { get; }
         string FileName { get; }
         string ContentType { get; set; }
-        string[] directories { get; set; }
+        string[] Directories { get; set; }
     }
 }

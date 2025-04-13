@@ -1,0 +1,22 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <style>
+        input {
+            width: 242px;
+            height: 28px;
+            margin: 10px;
+        }
+    </style>
+}
+
+<h2>File Upload</h2>
+
+@using (Html.BeginForm("Add", "BlobTest", FormMethod.Post, new { enctype = "multipart/form-data", autocomplete = "off" }))
+{
+    <input type="file" name="AddFile" required />
+    <br />
+    <input type="text" name="FolderName" maxlength="16" placeholder="Folder Name" required />
+    <button type="submit">File Upload</button>
+}

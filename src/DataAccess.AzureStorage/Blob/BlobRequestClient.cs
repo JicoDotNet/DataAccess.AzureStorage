@@ -22,6 +22,6 @@ namespace DataAccess.AzureStorage.Blob
         public Stream FileStream { get; private set; }
         public string FileName { get; private set; }
         public string ContentType { get; set; }
-        public string[] directories { get; set; }
+        public string[] Directories { get; set; }
     }
 }

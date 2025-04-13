@@ -1,7 +1,7 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using System;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace DataAccess.AzureStorage.Blob
 {
@@ -23,11 +23,11 @@ namespace DataAccess.AzureStorage.Blob
             }
         }
 
-        private protected async Task CreateContainerAsync()
+        private protected void CreateContainer()
         {
             try
             {
-                await _blobContainerClient.CreateIfNotExistsAsync();
+                _blobContainerClient.CreateIfNotExists(publicAccessType: PublicAccessType.Blob);
             }
             catch (Exception ex)
             {

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace DataAccess.AzureStorage.Blob
 {
-    public sealed class AzureBlobAccess : AzureBlobManager
+    public sealed class AzureBlobAccess : AzureBlobManager, IAzureBlobAccess
     {
         private BlobClient _blobClient;
 
@@ -20,13 +20,14 @@ namespace DataAccess.AzureStorage.Blob
         {
             SetContainer(containerName);
         }
+
         public void SetContainer(string containerName)
         {
-            if (IsValidContainerName(containerName))
+            if (IsValidContainerName(containerName?.ToLower()))
             {
-                ContainerName = containerName;
-                _blobContainerClient = serviceClient.GetBlobContainerClient(containerName);
-                _ = CreateContainerAsync();
+                ContainerName = containerName?.ToLower();
+                _blobContainerClient = serviceClient.GetBlobContainerClient(ContainerName);
+                CreateContainer();
             }           
         }
 
@@ -40,7 +41,7 @@ namespace DataAccess.AzureStorage.Blob
                 }
                 string Path = string.Empty;
                 string fullPath = string.Empty;
-                Path += DirectoriesPath(blobRequestToUpload.directories);
+                Path += DirectoriesPath(blobRequestToUpload.Directories);
                 if (!string.IsNullOrEmpty(Path))
                 {
                     fullPath = $"{Path}/{SanitizedName(blobRequestToUpload.FileName)}";
@@ -123,7 +124,7 @@ namespace DataAccess.AzureStorage.Blob
             }
         }
 
-        public byte[] DownloadFile(string blobUrl)
+        public (byte[] fileContent, string contentType) DownloadFile(string blobUrl)
         {
             try
             {
@@ -132,11 +133,14 @@ namespace DataAccess.AzureStorage.Blob
                 string blobName = string.Join("", blobUri.Segments, 2, blobUri.Segments.Length - 2);
                 SetContainer(containerName);
                 _blobClient = _blobContainerClient.GetBlobClient(blobName);
+                byte[] fileContent = null;
                 using (MemoryStream ms = new MemoryStream())
                 {
                     _blobClient.DownloadTo(ms);
-                    return ms.ToArray();
+                    fileContent = ms.ToArray();
                 }
+                string contentType = _blobClient.GetProperties().Value.ContentType;
+                return (fileContent, contentType);
             }
             catch (Exception ex)
             {
