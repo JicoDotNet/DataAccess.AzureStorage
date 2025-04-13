@@ -1,21 +1,13 @@
-﻿using Azure.Data.Tables;
-using Azure.Storage.Blobs;
+﻿using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using DataAccess.AzureStorage.Table;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.AzureStorage.Blob
 {
     public sealed class AzureBlobAccess : AzureBlobManager
     {
-        public string ContainerName { get; private set; }
-
         private BlobClient _blobClient;
 
         public AzureBlobAccess(string connectionString)
@@ -26,38 +18,39 @@ namespace DataAccess.AzureStorage.Blob
         public AzureBlobAccess(string containerName, string connectionString)
             : base(connectionString)
         {
-            ContainerName = containerName;
-            blobContainerClient = serviceClient.GetBlobContainerClient(containerName);
-            _ = CreateContainerAsync();
+            SetContainer(containerName);
         }
         public void SetContainer(string containerName)
         {
-            ContainerName = containerName;
-            blobContainerClient = serviceClient.GetBlobContainerClient(containerName);
-            _ = CreateContainerAsync();
+            if (IsValidContainerName(containerName))
+            {
+                ContainerName = containerName;
+                _blobContainerClient = serviceClient.GetBlobContainerClient(containerName);
+                _ = CreateContainerAsync();
+            }           
         }
 
-        public BlobResponseClient Upload(BlobRequestClient blobUpload)
+        public IBlobResponseClient Upload(IBlobRequestClient blobRequestToUpload)
         {
             try
             {
-                if (blobUpload == null)
+                if (blobRequestToUpload == null)
                 {
-                    throw new ArgumentNullException(nameof(blobUpload), "blobUpload should not be null.");
+                    throw new ArgumentNullException(nameof(blobRequestToUpload), "blobRequestToUpload should not be null.");
                 }
                 string Path = string.Empty;
                 string fullPath = string.Empty;
-                Path += DirectoriesPath(blobUpload.directories);
+                Path += DirectoriesPath(blobRequestToUpload.directories);
                 if (!string.IsNullOrEmpty(Path))
                 {
-                    fullPath = $"{Path}/{SanitizedName(blobUpload.FileName)}";
+                    fullPath = $"{Path}/{SanitizedName(blobRequestToUpload.FileName)}";
                 }
                 else
                 {
-                    fullPath = SanitizedName(blobUpload.FileName);
+                    fullPath = SanitizedName(blobRequestToUpload.FileName);
                 }
-                _blobClient = blobContainerClient.GetBlobClient(fullPath);
-                _blobClient.Upload(blobUpload.FileStream, new BlobHttpHeaders { ContentType = blobUpload.ContentType });
+                _blobClient = _blobContainerClient.GetBlobClient(fullPath);
+                _blobClient.Upload(blobRequestToUpload.FileStream, new BlobHttpHeaders { ContentType = blobRequestToUpload.ContentType });
 
                 return new BlobResponseClient
                 {
@@ -74,26 +67,26 @@ namespace DataAccess.AzureStorage.Blob
             }
         }
 
-        public List<BlobDetails> BlobDetails()
+        public List<IBlobDetails> BlobDetails()
         {
             return BlobDetails(null);
         }
 
-        public List<BlobDetails> BlobDetails(string[] directories)
+        public List<IBlobDetails> BlobDetails(string[] directories)
         {
             try
             {
-                List<BlobDetails> blobDetailsList = new List<BlobDetails>();
+                List<IBlobDetails> blobDetailsList = new List<IBlobDetails>();
 
                 string prefix = directories != null && directories.Length > 0 ? $"{DirectoriesPath(directories)}/" : "/";
 
-                foreach (var blobItem in blobContainerClient.GetBlobs(prefix: prefix))
+                foreach (var blobItem in _blobContainerClient.GetBlobs(prefix: prefix))
                 {
-                    _blobClient = blobContainerClient.GetBlobClient(blobItem.Name);
+                    _blobClient = _blobContainerClient.GetBlobClient(blobItem.Name);
 
                     BlobProperties properties = _blobClient.GetProperties();
 
-                    BlobDetails blobDetails = new BlobDetails
+                    IBlobDetails blobDetails = new BlobDetails
                     {
                         Path = _blobClient.Uri.ToString(),
                         ContentLength = properties.ContentLength,
@@ -121,7 +114,7 @@ namespace DataAccess.AzureStorage.Blob
                 string blobName = string.Join("", blobUri.Segments, 2, blobUri.Segments.Length - 2);
 
                 SetContainer(containerName);
-                _blobClient = blobContainerClient.GetBlobClient(blobName);
+                _blobClient = _blobContainerClient.GetBlobClient(blobName);
                 _blobClient.DeleteIfExists();
             }
             catch (Exception ex)
@@ -138,7 +131,7 @@ namespace DataAccess.AzureStorage.Blob
                 string containerName = blobUri.Segments[1].TrimEnd('/');
                 string blobName = string.Join("", blobUri.Segments, 2, blobUri.Segments.Length - 2);
                 SetContainer(containerName);
-                _blobClient = blobContainerClient.GetBlobClient(blobName);
+                _blobClient = _blobContainerClient.GetBlobClient(blobName);
                 using (MemoryStream ms = new MemoryStream())
                 {
                     _blobClient.DownloadTo(ms);
@@ -147,7 +140,7 @@ namespace DataAccess.AzureStorage.Blob
             }
             catch (Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
 
