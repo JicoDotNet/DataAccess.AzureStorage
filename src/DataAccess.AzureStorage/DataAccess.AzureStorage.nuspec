@@ -1,19 +1,24 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
 	<metadata>
-		<id>$(Id)</id>
-		<version>$(PackageVersion)</version>
-		<authors>$(Authors)</authors>
-		<owners>$(Company)</owners>		
+		<Version>$(Version)</Version>
+		<PackageVersion>$(PackageVersion)</PackageVersion>
 
-		<description>$(Description)</description>
-		<tags>Soubhik, Nandy, Azure, Storage, Table, Blob</tags>
+		<Authors>$(Authors)</Authors>
+		<Company>$(Company)</Company>
+		<PackageId>$(Id)</PackageId>
+		<Title>$(Id)</Title>
 
-		<license type="expression">MIT</license>
-		<projectUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</projectUrl>
-		<repository type="git" url="https://github.com/JicoDotNet/DataAccess.AzureStorage" />
+		<Description>$(Description)</Description>
+		<PackageTags>Soubhik, Nandy, Azure, Storage, Table, Blob</PackageTags>
 
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+		<PackageProjectUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</RepositoryUrl>
+
+		<RepositoryType>git</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</metadata>
 
 	<files>
