@@ -1,0 +1,15 @@
+<Project>
+	<PropertyGroup>
+		<Id>DataAccess.AzureStorage</Id>
+		<PackageVersion>3.0.0</PackageVersion>
+		<Version>3.0.0</Version>
+		<FileVersion>3.0.0.0</FileVersion>
+		<AssemblyVersion>3.0.0.0</AssemblyVersion>
+		<Authors>Soubhik Nandy</Authors>
+		<Company>github.com/JicoDotNet</Company>
+		<Description>Azure Table and Blob Storage Library for .NETStandard2.0 and 2.1</Description>
+
+		<AzureDataTablesVersion>12.10.0</AzureDataTablesVersion>
+		<AzureStorageBlobsVersion>12.24.0</AzureStorageBlobsVersion>
+	</PropertyGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <Version>$(AzureDataTablesVersion)</Version>
+    <PackageVersion>$(AzureDataTablesVersion)</PackageVersion>
+    <Authors>$(Authors)</Authors>
+    <Company>$(Company)</Company>
+    <PackageId>$(Id)</PackageId>
+    <Title>$(Id)</Title>
+    <Description>A .NET Standard 2.0/2.1 library to access Azure Table and Blob Storage</Description>
+    <PackageTags>Soubhik, Nandy, Azure, Storage, Table, Blob</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+</Project>

@@ -1,6 +1,5 @@
 ﻿using Azure.Data.Tables;
 using System;
-using System.Threading.Tasks;
 
 namespace DataAccess.AzureStorage.Table
 {
