@@ -20,7 +20,7 @@ on:
 
 jobs:
   build:
-    name: Build DataAccess.AzureStorage Solution
+    name: Build DataAccess.AzureStorage
     runs-on: windows-latest
 
     steps:

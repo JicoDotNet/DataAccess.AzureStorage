@@ -5,11 +5,23 @@
 		<RootNamespace>$(Id)</RootNamespace>
 		<LangVersion>8.0</LangVersion>
 		<OutputPath>../build/</OutputPath>
+		
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		
+		<PackageProjectUrl>$(PackageProjectUrl)</PackageProjectUrl>
+		<RepositoryUrl>$(RepositoryUrl)</RepositoryUrl>
+		
+		<PackageReleaseNotes>$(ReleaseNotes)</PackageReleaseNotes>
+		<PackageTags>$(PackageTags)</PackageTags>
 	</PropertyGroup>
 
-	<ItemGroup>
+	<ItemGroup>		
 		<PackageReference Include="Azure.Data.Tables" Version="$(AzureDataTablesVersion)" />
 		<PackageReference Include="Azure.Storage.Blobs" Version="$(AzureStorageBlobsVersion)" />
+		
+		<None Include="../../LICENSE" Pack="true" PackagePath="" />
+		<None Include="../../README.md" Pack="true" PackagePath="" />
 	</ItemGroup>
 
 </Project>

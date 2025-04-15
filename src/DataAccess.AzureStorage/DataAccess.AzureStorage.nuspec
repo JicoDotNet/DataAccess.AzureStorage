@@ -1,22 +1,37 @@
-<Project>
-  <PropertyGroup>
-    <Version>$(Version)</Version>
-    <PackageVersion>$(PackageVersion)</PackageVersion>
-	  
-    <Authors>$(Authors)</Authors>
-    <Company>$(Company)</Company>
-    <PackageId>$(Id)</PackageId>
-    <Title>$(Id)</Title>
-	  
-    <Description>$(Description)</Description>
-    <PackageTags>Soubhik, Nandy, Azure, Storage, Table, Blob</PackageTags>
-	  
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-	  
-    <PackageProjectUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</RepositoryUrl>
-	  
-    <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-</Project>
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>$(Id)</id>
+		<version>$(Version)</version>
+
+		<authors>$(Authors)</authors>
+		<owners>$(Company)</owners>
+
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<license type="expression">MIT</license>
+		<projectUrl>$(PackageProjectUrl)</projectUrl>
+		<repository type="git" url="$(RepositoryUrl)" />
+		
+		<description>$(Description)</description>
+		<releaseNotes>$(ReleaseNotes)</releaseNotes>
+		<tags>$(PackageTags)</tags>
+		<dependencies>
+			<group targetFramework=".NETStandard2.0">
+				<dependency id="Azure.Data.Tables" version="[12.10.0]" />
+				<dependency id="Azure.Storage.Blobs" version="[12.24.0]" />
+			</group>
+			<group targetFramework=".NETStandard2.1">
+				<dependency id="Azure.Data.Tables" version="[12.10.0]" />
+				<dependency id="Azure.Storage.Blobs" version="[12.24.0]" />
+			</group>
+		</dependencies>
+	</metadata>
+
+	<files>
+		<file src="build\netstandard2.0\DataAccess.AzureStorage.dll" target="lib\netstandard2.0" />
+		<file src="build\netstandard2.1\DataAccess.AzureStorage.dll" target="lib\netstandard2.1" />
+		
+		<file src="../../LICENSE" target="" />
+		<file src="../../README.md" target="" />
+	</files>
+</package>
