@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace DataAccess.AzureStorage.Table
 {
@@ -6,7 +7,8 @@ namespace DataAccess.AzureStorage.Table
     {
         string TableName { get; }
         void SetTableName(string tableName);
-        T InsertEntity<T>(T entity) where T : TableEntity;        
+        T InsertEntity<T>(T entity) where T : TableEntity;
+        Task<T> InsertEntityAsync<T>(T entity) where T : TableEntity;
         T ReplaceEntity<T>(T entity) where T : TableEntity;
         T UpdateEntity<T>(T entity) where T : TableEntity;
         T MergeEntity<T>(T entity) where T : TableEntity;

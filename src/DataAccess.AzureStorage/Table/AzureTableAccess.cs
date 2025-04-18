@@ -3,6 +3,7 @@ using Azure.Data.Tables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DataAccess.AzureStorage.Table
 {
@@ -34,6 +35,19 @@ namespace DataAccess.AzureStorage.Table
             try
             {
                 _tableClient.UpsertEntity(entity, TableUpdateMode.Merge);
+                return entity;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<T> InsertEntityAsync<T>(T entity) where T : TableEntity
+        {
+            try
+            {
+                await _tableClient.UpsertEntityAsync(entity, TableUpdateMode.Merge);
                 return entity;
             }
             catch (Exception ex)
