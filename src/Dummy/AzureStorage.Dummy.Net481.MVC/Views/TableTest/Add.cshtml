@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <style>
+        input {
+            width: 242px;
+            height: 28px;
+            margin: 10px;
+        }
+    </style>
+}
+
+<h2>Add value into table</h2>
+
+@using (Html.BeginForm("Add", "TableTest", FormMethod.Post, new { autocomplete = "off" }))
+{
+    <label>Partition Key</label>
+    <input type="text" name="PartitionKey" maxlength="16" placeholder="Partition Key" required>
+    <br />
+    <label>Row Key</label>
+    <input type="text" name="RowKey" maxlength="16" placeholder="Row Key" required value="@(Guid.NewGuid().ToString())">
+    <br />
+    <label>Age</label>
+    <input type="number" name="Age" maxlength="16" placeholder="Age" required>
+    <br />
+    <label>Name</label>
+    <input type="text" name="Name" maxlength="16" placeholder="Name" required>
+
+    <button type="submit"> Save </button>
+}

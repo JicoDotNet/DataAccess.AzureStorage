@@ -1,0 +1,60 @@
+﻿@model IEnumerable<AzureStorage.Dummy.Net481.MVC.Models.TableTestModels>
+
+@{
+    ViewBag.Title = "Show";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+}
+
+<h2>Show</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PartitionKey)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RowKey)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Age)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PartitionKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RowKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.RowKey }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.RowKey }) |
+                @Html.ActionLink("Update", "Update", new { id = item.RowKey }) |
+                @Html.ActionLink("Replace", "Replace", new { id = item.RowKey }) |
+                @Html.ActionLink("Merge", "Merge", new { id = item.RowKey }) |
+            </td>
+        </tr>
+    }
+
+</table>

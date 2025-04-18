@@ -1,0 +1,48 @@
+﻿@using DataAccess.AzureStorage.Table
+@model List<DynamicTableEntity>
+
+@{
+    ViewBag.Title = "CustomPropertyGetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+    </style>
+}
+
+<h2>Custom Property Get All</h2>
+
+<p>
+    @Html.ActionLink("Create New Master", "CustomMasterAdd")
+    <br />
+    @Html.ActionLink("Custom Property Insert", "CustomProperty")
+    <br />
+    @Html.ActionLink("Custom Property Show", "CustomPropertyGetAll")
+</p>
+
+<table class="table">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PartitionKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RowKey)
+            </td>
+            @foreach (var keyValues in item.Properties)
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => keyValues.Key)
+                </td>
+                <td>
+                    @keyValues.Value.ToString()
+                </td>
+            }
+        </tr>
+    }
+
+</table>

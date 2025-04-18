@@ -1,0 +1,21 @@
+<Project>
+	<PropertyGroup>
+		<Id>DataAccess.AzureStorage</Id>		
+		<Version>3.0.0</Version>
+		<PackageVersion>3.0.0</PackageVersion>
+		<FileVersion>3.0.0.0</FileVersion>
+		<AssemblyVersion>3.0.0.0</AssemblyVersion>
+		
+		<Authors>Soubhik Nandy</Authors>
+		<Company>github.com/JicoDotNet</Company>
+		<PackageTags>azure table blob storage netstandard Soubhik Nandy Azure Storage Table Blob</PackageTags>
+		<Description>Azure Table and Blob Storage Library for .NETStandard 2.0 and 2.1</Description>
+		<ReleaseNotes>This is beta version for accessing Azure Storage</ReleaseNotes>
+		
+		<PackageProjectUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage/tree/master</RepositoryUrl>
+
+		<AzureDataTablesVersion>12.10.0</AzureDataTablesVersion>
+		<AzureStorageBlobsVersion>12.24.0</AzureStorageBlobsVersion>
+	</PropertyGroup>
+</Project>

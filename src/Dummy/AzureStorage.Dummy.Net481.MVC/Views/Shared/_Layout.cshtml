@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <ul>
+        <li>
+            Table Test
+            <ul>
+                <li> <a href="@Url.Action("Add", "TableTest")">Table Add</a></li>
+                <li><a href="@Url.Action("Show", "TableTest")">Table Show</a></li>
+                <li><a href="@Url.Action("CustomMaster", "TableTest")">Custom Master</a></li>
+            </ul>
+        </li>
+        <li>
+            Blob Test
+            <ul>
+                <li> <a href="@Url.Action("Add", "BlobTest")">File Add</a></li>
+                <li><a href="@Url.Action("Show", "BlobTest")">File Show</a></li>
+            </ul>
+        </li>
+    </ul>
+    
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

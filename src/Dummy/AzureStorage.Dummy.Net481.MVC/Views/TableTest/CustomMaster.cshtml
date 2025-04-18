@@ -1,0 +1,78 @@
+﻿@using AzureStorage.Dummy.Net481.MVC.Models
+@model IEnumerable<CustomPropertyMaster>
+
+@{
+    ViewBag.Title = "Custom Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+}
+
+<h2>Show Custom Master</h2>
+
+<p>
+    @Html.ActionLink("Create New Master", "CustomMasterAdd")
+    <br />
+    @Html.ActionLink("Custom Property Insert", "CustomProperty")
+    <br />
+    @Html.ActionLink("Custom Property Show", "CustomPropertyGetAll")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PartitionKey)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.RowKey)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ColumnName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.LabelName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DataType)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DefaultValue)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.IsRequired)
+        </th>
+        <th>Actions</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PartitionKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RowKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ColumnName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LabelName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DefaultValue)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsRequired)
+            </td>
+            <td>
+            </td>
+        </tr>
+    }
+
+</table>
