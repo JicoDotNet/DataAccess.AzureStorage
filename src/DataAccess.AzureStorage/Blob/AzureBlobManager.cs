@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace DataAccess.AzureStorage.Blob
 {
-    public abstract class AzureBlobManager : AzureManager, IDisposable
+    public abstract class AzureBlobManager : AzureStorageManager, IDisposable
     {
         public string ContainerName { get; protected set; }
         private protected BlobServiceClient serviceClient { get; private set; }

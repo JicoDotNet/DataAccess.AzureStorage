@@ -51,7 +51,7 @@ namespace AzureStorage.Dummy.Net481.MVC.Controllers
             AzureTableAccess tableAccess = new AzureTableAccess("AmarTable", ConnectionString);
             TableTestModels model = tableAccess.RetrieveEntity<TableTestModels>("RowKey eq '" + id + "'");
             model.Name = model.Name + Guid.NewGuid().ToString();
-            tableAccess.UpdateEntity(model);
+            tableAccess.ReplaceEntity(model);
             return RedirectToAction("Show");
         }
         public ActionResult Replace(string id)
