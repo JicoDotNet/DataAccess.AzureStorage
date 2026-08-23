@@ -18,9 +18,11 @@ namespace DataAccess.AzureStorage.Blob
             SetContainer(containerName);
         }
 
+        /// <inheritdoc/>
         public void SetContainer(string containerName) => SetContainerCore(containerName);
 
         #region Upload
+        /// <inheritdoc/>
         public IBlobResponseClient Upload(IBlobRequestClient blobRequestToUpload, bool overwrite = true)
         {
             EnsureContainerReady();
@@ -42,6 +44,7 @@ namespace DataAccess.AzureStorage.Blob
             }
         }
 
+        /// <inheritdoc/>
         public async Task<IBlobResponseClient> UploadAsync(IBlobRequestClient blobRequestToUpload, bool overwrite = true, CancellationToken cancellationToken = default)
         {
             EnsureContainerReady();
@@ -66,8 +69,9 @@ namespace DataAccess.AzureStorage.Blob
         #endregion
 
         #region List
+        /// <inheritdoc/>
         public List<IBlobDetails> BlobDetails() => BlobDetails(null);
-
+        /// <inheritdoc/>
         public List<IBlobDetails> BlobDetails(string[] directories)
         {
             EnsureContainerReady();
@@ -86,10 +90,10 @@ namespace DataAccess.AzureStorage.Blob
                 throw new InvalidOperationException($"Listing blobs failed for container '{ContainerName}'.", ex);
             }
         }
-
+        /// <inheritdoc/>
         public Task<List<IBlobDetails>> BlobDetailsAsync(CancellationToken cancellationToken = default)
             => BlobDetailsAsync(null, cancellationToken);
-
+        /// <inheritdoc/>
         public async Task<List<IBlobDetails>> BlobDetailsAsync(string[] directories, CancellationToken cancellationToken = default)
         {
             EnsureContainerReady();
@@ -111,6 +115,7 @@ namespace DataAccess.AzureStorage.Blob
         #endregion
 
         #region Exists
+        /// <inheritdoc/>
         public bool Exists(string blobName)
         {
             EnsureContainerReady();
@@ -124,7 +129,7 @@ namespace DataAccess.AzureStorage.Blob
                 throw new InvalidOperationException($"Exists check failed for blob '{blobName}' in container '{ContainerName}'.", ex);
             }
         }
-
+        /// <inheritdoc/>
         public async Task<bool> ExistsAsync(string blobName, CancellationToken cancellationToken = default)
         {
             EnsureContainerReady();
@@ -143,6 +148,7 @@ namespace DataAccess.AzureStorage.Blob
         #endregion
 
         #region Delete — name-relative (current container)
+        /// <inheritdoc/>
         public bool Delete(string blobName)
         {
             EnsureContainerReady();
@@ -157,6 +163,7 @@ namespace DataAccess.AzureStorage.Blob
                 throw new InvalidOperationException($"Delete failed for blob '{blobName}' in container '{ContainerName}'.", ex);
             }
         }
+        /// <inheritdoc/>
         public async Task<bool> DeleteAsync(string blobName, CancellationToken cancellationToken = default)
         {
             EnsureContainerReady();
@@ -175,6 +182,7 @@ namespace DataAccess.AzureStorage.Blob
         #endregion
 
         #region Delete — by URL
+        /// <inheritdoc/>
         public bool DeleteByUrl(string blobUrl)
         {
             var (containerName, blobName) = ParseBlobUrl(blobUrl);
@@ -189,7 +197,7 @@ namespace DataAccess.AzureStorage.Blob
                 throw new InvalidOperationException($"Delete failed for blob '{blobName}' in container '{containerName}'.", ex);
             }
         }
-
+        /// <inheritdoc/>
         public async Task<bool> DeleteByUrlAsync(string blobUrl, CancellationToken cancellationToken = default)
         {
             var (containerName, blobName) = ParseBlobUrl(blobUrl);
@@ -208,6 +216,7 @@ namespace DataAccess.AzureStorage.Blob
         #endregion
 
         #region Download — name-relative
+        /// <inheritdoc/>
         public (byte[] fileContent, string contentType) DownloadFile(string blobName)
         {
             EnsureContainerReady();
@@ -222,7 +231,7 @@ namespace DataAccess.AzureStorage.Blob
                 throw new InvalidOperationException($"Download failed for blob '{blobName}' in container '{ContainerName}'.", ex);
             }
         }
-
+        /// <inheritdoc/>
         public async Task<(byte[] fileContent, string contentType)> DownloadFileAsync(string blobName, CancellationToken cancellationToken = default)
         {
             EnsureContainerReady();
@@ -240,6 +249,7 @@ namespace DataAccess.AzureStorage.Blob
         #endregion
 
         #region Download — by URL
+        /// <inheritdoc/>
         public (byte[] fileContent, string contentType) DownloadFileByUrl(string blobUrl)
         {
             var (containerName, blobName) = ParseBlobUrl(blobUrl);
@@ -254,7 +264,7 @@ namespace DataAccess.AzureStorage.Blob
                 throw new InvalidOperationException($"Download failed for blob '{blobName}' in container '{containerName}'.", ex);
             }
         }
-
+        /// <inheritdoc/>
         public async Task<(byte[] fileContent, string contentType)> DownloadFileByUrlAsync(string blobUrl, CancellationToken cancellationToken = default)
         {
             var (containerName, blobName) = ParseBlobUrl(blobUrl);
