@@ -5,64 +5,87 @@ using System.Text.RegularExpressions;
 
 namespace DataAccess.AzureStorage.Blob
 {
-    public abstract class AzureBlobManager : AzureStorageManager, IDisposable
+    public abstract class AzureBlobManager : AzureStorageManager
     {
-        public string ContainerName { get; protected set; }
-        private protected BlobServiceClient serviceClient { get; private set; }
+        public string ContainerName { get; private protected set; }
+        private protected BlobServiceClient ServiceClient { get; }
+        private protected BlobContainerClient ContainerClient { get; private set; }
+        private readonly object _containerClientLock = new object();
 
-        private protected BlobContainerClient _blobContainerClient;
         private protected AzureBlobManager(string connectionString) : base(connectionString)
         {
             try
             {
-                serviceClient = new BlobServiceClient(AzureStorageConnectionString);
+                ServiceClient = new BlobServiceClient(AzureStorageConnectionString);
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new InvalidOperationException("Failed to create a BlobServiceClient from the supplied connection string.", ex);
             }
         }
 
-        private protected void CreateContainer()
+        private protected void SetContainerCore(string containerName)
         {
-            try
+            string normalizedContainerName = containerName?.ToLowerInvariant();
+            ValidateContainerName(normalizedContainerName);
+            lock (_containerClientLock)
             {
-                _blobContainerClient.CreateIfNotExists(publicAccessType: PublicAccessType.Blob);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                if (ContainerClient != null && string.Equals(ContainerName, normalizedContainerName, StringComparison.Ordinal))
+                {
+                    return;
+                }
+                try
+                {
+                    BlobContainerClient client = ServiceClient.GetBlobContainerClient(normalizedContainerName);
+                    client.CreateIfNotExists(publicAccessType: PublicAccessType.Blob);
+                    ContainerName = normalizedContainerName;
+                    ContainerClient = client;
+                }
+                catch (Exception ex)
+                {
+                    throw new InvalidOperationException($"Failed to create or verify container '{normalizedContainerName}'.", ex);
+                }
             }
         }
 
-        protected bool IsValidContainerName(string containerName)
+        private protected BlobContainerClient GetContainerClient(string containerName)
         {
+            string normalizedContainerName = containerName?.ToLowerInvariant();
+            ValidateContainerName(normalizedContainerName);
+            return ServiceClient.GetBlobContainerClient(normalizedContainerName);
+        }
+
+        private protected void EnsureContainerReady()
+        {
+            if (ContainerClient == null)
+            {
+                throw new InvalidOperationException(
+                    "No container has been selected. Call SetContainer(...) or use the constructor " +
+                    "overload that accepts a container name before performing operations.");
+            }
+        }
+
+        protected static void ValidateContainerName(string containerName)
+        {
+            int minContainerNameLength = 3;
+            int maxContainerNameLength = 63;
+            Regex ContainerNamePattern = new Regex(@"^[a-z0-9]([a-z0-9\-]*[a-z0-9])?$", RegexOptions.Compiled);
+
             if (string.IsNullOrWhiteSpace(containerName))
-                throw new ArgumentException("Container name cannot be null or empty.");
+                throw new ArgumentException("Container name cannot be null or empty.", nameof(containerName));
 
-            if (containerName.Length < 3 || containerName.Length > 63)
-                throw new ArgumentException("Container name must be between 3 and 63 characters.");
+            if (containerName.Length < minContainerNameLength || containerName.Length > maxContainerNameLength)
+                throw new ArgumentException(
+                    $"Container name must be between {minContainerNameLength} and {maxContainerNameLength} characters.",
+                    nameof(containerName));
 
-            if (!Regex.IsMatch(containerName, @"^[a-z0-9]([a-z0-9\-]*[a-z0-9])?$"))
-                throw new ArgumentException("Container name must match with (^[a-z0-9]([a-z0-9\\-]*[a-z0-9])?$).");
+            if (!ContainerNamePattern.IsMatch(containerName))
+                throw new ArgumentException(
+                    "Container name must consist of lowercase letters, numbers, and single hyphens, " +
+                    "and must start and end with a letter or number.", nameof(containerName));
 
             if (containerName.Contains("--"))
-                throw new ArgumentException("Container name must not be contains of '--'.");
-
-            if (!char.IsLetter(containerName[0]))
-                throw new ArgumentException("Container name must start with a letter.");
-
-            return true;
-        }
-
-        public void Dispose()
-        {
-            GC.Collect();
-        }
-
-        ~AzureBlobManager()
-        {
-            GC.Collect();
+                throw new ArgumentException("Container name must not contain consecutive hyphens ('--').", nameof(containerName));
         }
     }
 }
