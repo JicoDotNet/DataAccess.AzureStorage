@@ -40,7 +40,7 @@ jobs:
     name: Pack NuGet package
     needs: build
     runs-on: windows-latest
-    #if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,3 +59,6 @@ jobs:
           name: DataAccess.AzureStorage-nupkg
           path: ./nupkgs/*.nupkg
           if-no-files-found: error
+
+      #- name: Push to NuGet.org
+      #  run: dotnet nuget push "./nupkgs/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
