@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Azure;
+using System;
 
 namespace DataAccess.AzureStorage.Blob
 {
@@ -9,5 +10,6 @@ namespace DataAccess.AzureStorage.Blob
         public string AbsolutePath { get; set; }
         public string AccountName { get; set; }
         public string Path { get; set; }
+        public ETag ETag { get; set; }
     }
 }
