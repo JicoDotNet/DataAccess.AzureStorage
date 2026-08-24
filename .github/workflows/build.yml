@@ -35,3 +35,30 @@ jobs:
 
       - name: Build Solution
         run: msbuild src/DataAccess.AzureStorage.sln /p:Configuration=Release
+
+  package:
+    name: Pack NuGet package
+    needs: build
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Pack DataAccess.AzureStorage
+        run: dotnet pack src/DataAccess.AzureStorage/DataAccess.AzureStorage.csproj --configuration Release --output ./nupkgs
+
+      - name: Upload NuGet package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DataAccess.AzureStorage-nupkg
+          path: ./nupkgs/*.nupkg
+          if-no-files-found: error
+
+      #- name: Push to NuGet.org
+      #  run: dotnet nuget push "./nupkgs/*.nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate

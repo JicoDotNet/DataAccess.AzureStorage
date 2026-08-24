@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Azure;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataAccess.AzureStorage.Table
@@ -7,17 +9,45 @@ namespace DataAccess.AzureStorage.Table
     {
         string TableName { get; }
         void SetTableName(string tableName);
+
         T InsertEntity<T>(T entity) where T : TableEntity;
-        Task<T> InsertEntityAsync<T>(T entity) where T : TableEntity;
-        T ReplaceEntity<T>(T entity) where T : TableEntity;
-        T UpdateEntity<T>(T entity) where T : TableEntity;
-        T MergeEntity<T>(T entity) where T : TableEntity;
-        bool DeleteEntity<T>(T entity) where T : TableEntity;
-        bool DeleteEntity(string partitionKey, string rowKey);        
-        List<T> RetrieveEntities<T>(string query) where T : TableEntity;
-        T RetrieveEntity<T>(string query) where T : TableEntity;
+        Task<T> InsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : TableEntity;
+
+        T UpsertEntity<T>(T entity) where T : TableEntity;
+        Task<T> UpsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : TableEntity;
+
+        T ReplaceEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity;
+        Task<T> ReplaceEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity;
+
+        T MergeEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity;
+        Task<T> MergeEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity;
+
+        bool DeleteEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity;
+        Task<bool> DeleteEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity;
+        bool DeleteEntity(string partitionKey, string rowKey, ETag? ifMatch = null);
+        Task<bool> DeleteEntityAsync(string partitionKey, string rowKey, ETag? ifMatch = null, CancellationToken cancellationToken = default);
+
+        List<T> RetrieveEntities<T>(string filter = null) where T : TableEntity;
+        Task<List<T>> RetrieveEntitiesAsync<T>(string filter = null, CancellationToken cancellationToken = default) where T : TableEntity;
+        T RetrieveEntity<T>(string filter) where T : TableEntity;
+        Task<T> RetrieveEntityAsync<T>(string filter, CancellationToken cancellationToken = default) where T : TableEntity;
+
         DynamicTableEntity InsertEntity(DynamicTableEntity entity);
-        List<DynamicTableEntity> RetrieveEntities(string query);
-        DynamicTableEntity RetrieveEntity(string query);
+        Task<DynamicTableEntity> InsertEntityAsync(DynamicTableEntity entity, CancellationToken cancellationToken = default);
+        List<DynamicTableEntity> RetrieveEntities(string filter);
+        Task<List<DynamicTableEntity>> RetrieveEntitiesAsync(string filter, CancellationToken cancellationToken = default);
+        DynamicTableEntity RetrieveEntity(string filter);
+        Task<DynamicTableEntity> RetrieveEntityAsync(string filter, CancellationToken cancellationToken = default);
+        DynamicTableEntity UpsertEntity(DynamicTableEntity entity);
+        Task<DynamicTableEntity> UpsertEntityAsync(DynamicTableEntity entity, CancellationToken cancellationToken = default);
+
+        DynamicTableEntity ReplaceEntity(DynamicTableEntity entity, ETag? ifMatch = null);
+        Task<DynamicTableEntity> ReplaceEntityAsync(DynamicTableEntity entity, ETag? ifMatch = null, CancellationToken cancellationToken = default);
+
+        DynamicTableEntity MergeEntity(DynamicTableEntity entity, ETag? ifMatch = null);
+        Task<DynamicTableEntity> MergeEntityAsync(DynamicTableEntity entity, ETag? ifMatch = null, CancellationToken cancellationToken = default);
+
+        bool DeleteEntity(DynamicTableEntity entity, ETag? ifMatch = null);
+        Task<bool> DeleteEntityAsync(DynamicTableEntity entity, ETag? ifMatch = null, CancellationToken cancellationToken = default);
     }
 }
