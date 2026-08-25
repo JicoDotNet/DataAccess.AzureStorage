@@ -10,27 +10,27 @@ namespace DataAccess.AzureStorage.Table
         string TableName { get; }
         void SetTableName(string tableName);
 
-        T InsertEntity<T>(T entity) where T : TableEntity;
-        Task<T> InsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : TableEntity;
+        T InsertEntity<T>(T entity) where T : AzureTableEntity;
+        Task<T> InsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : AzureTableEntity;
 
-        T UpsertEntity<T>(T entity) where T : TableEntity;
-        Task<T> UpsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : TableEntity;
+        T UpsertEntity<T>(T entity) where T : AzureTableEntity;
+        Task<T> UpsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : AzureTableEntity;
 
-        T ReplaceEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity;
-        Task<T> ReplaceEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity;
+        T ReplaceEntity<T>(T entity, ETag? ifMatch = null) where T : AzureTableEntity;
+        Task<T> ReplaceEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : AzureTableEntity;
 
-        T MergeEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity;
-        Task<T> MergeEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity;
+        T MergeEntity<T>(T entity, ETag? ifMatch = null) where T : AzureTableEntity;
+        Task<T> MergeEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : AzureTableEntity;
 
-        bool DeleteEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity;
-        Task<bool> DeleteEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity;
+        bool DeleteEntity<T>(T entity, ETag? ifMatch = null) where T : AzureTableEntity;
+        Task<bool> DeleteEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : AzureTableEntity;
         bool DeleteEntity(string partitionKey, string rowKey, ETag? ifMatch = null);
         Task<bool> DeleteEntityAsync(string partitionKey, string rowKey, ETag? ifMatch = null, CancellationToken cancellationToken = default);
 
-        List<T> RetrieveEntities<T>(string filter = null) where T : TableEntity;
-        Task<List<T>> RetrieveEntitiesAsync<T>(string filter = null, CancellationToken cancellationToken = default) where T : TableEntity;
-        T RetrieveEntity<T>(string filter) where T : TableEntity;
-        Task<T> RetrieveEntityAsync<T>(string filter, CancellationToken cancellationToken = default) where T : TableEntity;
+        List<T> RetrieveEntities<T>(string filter = null) where T : AzureTableEntity;
+        Task<List<T>> RetrieveEntitiesAsync<T>(string filter = null, CancellationToken cancellationToken = default) where T : AzureTableEntity;
+        T RetrieveEntity<T>(string filter) where T : AzureTableEntity;
+        Task<T> RetrieveEntityAsync<T>(string filter, CancellationToken cancellationToken = default) where T : AzureTableEntity;
 
         DynamicTableEntity InsertEntity(DynamicTableEntity entity);
         Task<DynamicTableEntity> InsertEntityAsync(DynamicTableEntity entity, CancellationToken cancellationToken = default);

@@ -8,7 +8,7 @@ namespace DataAccess.AzureStorage.Table
     /// Default implementation of <see cref="IDynamicTableEntity"/>.
     /// See the interface for the contract around Properties vs. system fields.
     /// </summary>
-    public sealed class DynamicTableEntity : TableEntity, IDynamicTableEntity
+    public sealed class DynamicTableEntity : AzureTableEntity, IDynamicTableEntity
     {
         private static readonly IReadOnlyDictionary<EdmType, Type[]> EdmTypeToClrTypes =
             new Dictionary<EdmType, Type[]>

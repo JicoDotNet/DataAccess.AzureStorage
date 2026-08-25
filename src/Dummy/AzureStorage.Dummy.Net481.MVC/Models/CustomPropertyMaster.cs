@@ -2,7 +2,7 @@
 
 namespace AzureStorage.Dummy.Net481.MVC.Models
 {
-    public class CustomPropertyMaster : TableEntity
+    public class CustomPropertyMaster : AzureTableEntity
     {
         public string LabelName { get; set; }
 

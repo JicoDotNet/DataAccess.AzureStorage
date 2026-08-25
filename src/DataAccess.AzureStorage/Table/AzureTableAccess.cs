@@ -19,7 +19,7 @@ namespace DataAccess.AzureStorage.Table
 
         public void SetTableName(string tableName) => SetTable(tableName);
 
-        public T InsertEntity<T>(T entity) where T : TableEntity
+        public T InsertEntity<T>(T entity) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -34,7 +34,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public async Task<T> InsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : TableEntity
+        public async Task<T> InsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -49,7 +49,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public T UpsertEntity<T>(T entity) where T : TableEntity
+        public T UpsertEntity<T>(T entity) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -64,7 +64,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public async Task<T> UpsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : TableEntity
+        public async Task<T> UpsertEntityAsync<T>(T entity, CancellationToken cancellationToken = default) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -79,7 +79,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public T ReplaceEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity
+        public T ReplaceEntity<T>(T entity, ETag? ifMatch = null) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -94,7 +94,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public async Task<T> ReplaceEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity
+        public async Task<T> ReplaceEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -109,7 +109,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public T MergeEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity
+        public T MergeEntity<T>(T entity, ETag? ifMatch = null) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -124,7 +124,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public async Task<T> MergeEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity
+        public async Task<T> MergeEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
@@ -139,14 +139,14 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public bool DeleteEntity<T>(T entity, ETag? ifMatch = null) where T : TableEntity
+        public bool DeleteEntity<T>(T entity, ETag? ifMatch = null) where T : AzureTableEntity
         {
             EnsureTableReady();
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             return DeleteEntity(entity.PartitionKey, entity.RowKey, ifMatch ?? ResolveIfMatch(null, entity.ETag));
         }
 
-        public async Task<bool> DeleteEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : TableEntity
+        public async Task<bool> DeleteEntityAsync<T>(T entity, ETag? ifMatch = null, CancellationToken cancellationToken = default) where T : AzureTableEntity
         {
             EnsureTableReady();
             if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -182,7 +182,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }        
 
-        public List<T> RetrieveEntities<T>(string filter = null) where T : TableEntity
+        public List<T> RetrieveEntities<T>(string filter = null) where T : AzureTableEntity
         {
             EnsureTableReady();
             try
@@ -199,7 +199,7 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public async Task<List<T>> RetrieveEntitiesAsync<T>(string filter = null, CancellationToken cancellationToken = default) where T : TableEntity
+        public async Task<List<T>> RetrieveEntitiesAsync<T>(string filter = null, CancellationToken cancellationToken = default) where T : AzureTableEntity
         {
             EnsureTableReady();
             try
@@ -222,10 +222,10 @@ namespace DataAccess.AzureStorage.Table
             }
         }
 
-        public T RetrieveEntity<T>(string filter) where T : TableEntity
+        public T RetrieveEntity<T>(string filter) where T : AzureTableEntity
             => RetrieveEntities<T>(filter).FirstOrDefault();
 
-        public async Task<T> RetrieveEntityAsync<T>(string filter, CancellationToken cancellationToken = default) where T : TableEntity
+        public async Task<T> RetrieveEntityAsync<T>(string filter, CancellationToken cancellationToken = default) where T : AzureTableEntity
             => (await RetrieveEntitiesAsync<T>(filter, cancellationToken).ConfigureAwait(false)).FirstOrDefault();
 
 
@@ -409,7 +409,7 @@ namespace DataAccess.AzureStorage.Table
         // Internal helpers
         // ---------------------------------------------------------------
 
-        private static void ValidateEntity<T>(T entity) where T : TableEntity
+        private static void ValidateEntity<T>(T entity) where T : AzureTableEntity
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
