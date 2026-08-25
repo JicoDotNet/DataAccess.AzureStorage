@@ -6,7 +6,7 @@ using System.Web;
 
 namespace AzureStorage.Dummy.Net481.MVC.Models
 {
-    public class TableTestModels : TableEntity
+    public class TableTestModels : AzureTableEntity
     {
         public int? Age { get; set; }
         public string Name { get; set; }
