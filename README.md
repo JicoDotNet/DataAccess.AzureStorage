@@ -34,12 +34,12 @@ tableAccess.ReplaceEntity(myEntity);
 ## Architecture
 
 ```
-AzureManager                    (abstract) — holds & validates the connection string
+AzureStorageManager                    (abstract) — holds & validates the connection string
     └── AzureTableManager       (abstract) — owns TableServiceClient / TableClient, table name validation & creation
             └── AzureTableAccess (sealed)  — implements IAzureTableAccess; all CRUD + query operations
 
 IAzureTableAccess                — public contract; program against this for testability/DI
-TableEntity                      — abstract base for your own entity classes (implements ITableEntity)
+IAzureTableEntity / AzureTableEntity                      — abstract base for your own entity classes (implements ITableEntity)
 IDynamicTableEntity / DynamicTableEntity
                                   — schema-less entity for when the row shape isn't known at compile time
 EdmType                          — enum of the Azure Table Storage EDM types DynamicTableEntity accepts
@@ -47,11 +47,12 @@ EdmType                          — enum of the Azure Table Storage EDM types D
 
 | Type | Role |
 |---|---|
-| `AzureManager` | Validates and stores the connection string. Base for any future Azure service manager (Table, Blob, etc.). |
+| `AzureStorageManager` | Validates and stores the connection string. Base for any future Azure service manager (Table, Blob, etc.). |
 | `AzureTableManager` | Creates the `TableServiceClient`, validates table names against Azure's naming rules, creates the table on first use, and guards every operation with `EnsureTableReady()`. |
 | `AzureTableAccess` | The class you actually instantiate. Implements `IAzureTableAccess`. Sealed — not meant to be subclassed further. |
 | `IAzureTableAccess` | The interface to depend on in your own code (constructors, DI registrations, mocks in unit tests). |
-| `TableEntity` | Your custom entities inherit from this instead of `Azure.Data.Tables.TableEntity` directly. Exposes `PartitionKey`, `RowKey`, `Timestamp`, `ETag`. |
+| `IAzureTableEntity` | Your custom entities inherit from this instead of `Azure.Data.Tables.AzureTableEntity` directly. Exposes `PartitionKey`, `RowKey`, `Timestamp`, `ETag`. |
+| `AzureTableEntity` | Your custom entities inherit from `IAzureTableEntity`. |
 | `DynamicTableEntity` | A ready-to-use entity for tables whose column shape you don't want to model as a C# class — properties are stored in a dictionary instead. |
 
 ---
@@ -88,7 +89,7 @@ An invalid name throws `ArgumentException` before any network call is made.
 ```csharp
 using DataAccess.AzureStorage.Table;
 
-public class CustomerEntity : TableEntity
+public class CustomerEntity : AzureTableEntity
 {
     public CustomerEntity() { }
 
@@ -219,7 +220,7 @@ so simple insert-then-write flows keep working without you having to think about
 ## Schema-less rows with `DynamicTableEntity`
 
 For tables where the columns aren't known at compile time (or vary row to row), use `DynamicTableEntity`
-instead of a custom `TableEntity` subclass. It supports the same full set of operations:
+instead of a custom `AzureTableEntity` subclass. It supports the same full set of operations:
 
 ```csharp
 var entity = new DynamicTableEntity
