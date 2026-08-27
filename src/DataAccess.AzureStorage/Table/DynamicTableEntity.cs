@@ -16,7 +16,8 @@ namespace DataAccess.AzureStorage.Table
                 [EdmType.String] = new[] { typeof(string) },
                 [EdmType.Binary] = new[] { typeof(byte[]) },
                 [EdmType.Boolean] = new[] { typeof(bool) },
-                [EdmType.DateTime] = new[] { typeof(DateTime), typeof(DateTimeOffset) },
+                [EdmType.DateTime] = new[] { typeof(DateTimeOffset) },
+                [EdmType.DateTime] = new[] { typeof(DateTime) },
                 [EdmType.Double] = new[] { typeof(double) },
                 [EdmType.Guid] = new[] { typeof(Guid) },
                 [EdmType.Int32] = new[] { typeof(int) },
@@ -56,9 +57,9 @@ namespace DataAccess.AzureStorage.Table
         }
 
         /// <inheritdoc />
-        public IDictionary<string, object> ToDictionary()
+        public IDictionary<string, object> Get()
         {
-            var result = new Dictionary<string, object>(Properties)
+            IDictionary<string, object> result = new Dictionary<string, object>(Properties)
             {
                 [nameof(PartitionKey)] = PartitionKey,
                 [nameof(RowKey)] = RowKey,
@@ -82,9 +83,9 @@ namespace DataAccess.AzureStorage.Table
             Timestamp = entity.Timestamp;
             ETag = entity.ETag;
 
-            var properties = new Dictionary<string, object>();
+            Dictionary<string, object> properties = new Dictionary<string, object>();
 
-            foreach (var property in entity)
+            foreach (KeyValuePair<string, object> property in entity)
             {
                 if (IsSystemKey(property.Key) || property.Key == "odata.etag")
                     continue;
@@ -104,7 +105,7 @@ namespace DataAccess.AzureStorage.Table
         private static bool IsValidType(object value)
         {
             if (value == null) return false;
-            return SupportedClrTypes.Contains(value.GetType());
+            return EdmTypeMap.IsSupportedClrType(value.GetType());
         }
     }
 }

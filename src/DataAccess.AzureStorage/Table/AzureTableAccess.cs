@@ -1,8 +1,10 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,6 +12,7 @@ namespace DataAccess.AzureStorage.Table
 {
     public sealed class AzureTableAccess : AzureTableManager, IAzureTableAccess
     {
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> DateTimePropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
         public AzureTableAccess(string connectionString) : base(connectionString){ }
 
         public AzureTableAccess(string tableName, string connectionString) : base(connectionString)
@@ -19,14 +22,19 @@ namespace DataAccess.AzureStorage.Table
 
         public void SetTableName(string tableName) => SetTable(tableName);
 
+        #region AzureTableEntity
         public T InsertEntity<T>(T entity) where T : AzureTableEntity
         {
             EnsureTableReady();
             ValidateEntity(entity);
             try
             {
-                TableClientInstance.AddEntity(entity);
+                TableClientInstance.AddEntity(ToSdkEntity(entity));
                 return entity;
+            }
+            catch(RequestFailedException rex)
+            {
+                throw rex;
             }
             catch (Exception ex)
             {
@@ -40,7 +48,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                await TableClientInstance.AddEntityAsync(entity, cancellationToken).ConfigureAwait(false);
+                await TableClientInstance.AddEntityAsync(ToSdkEntity(entity), cancellationToken).ConfigureAwait(false);
                 return entity;
             }
             catch (Exception ex)
@@ -55,7 +63,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                TableClientInstance.UpsertEntity(entity, TableUpdateMode.Merge);
+                TableClientInstance.UpsertEntity(ToSdkEntity(entity), TableUpdateMode.Merge);
                 return entity;
             }
             catch (Exception ex)
@@ -70,7 +78,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                await TableClientInstance.UpsertEntityAsync(entity, TableUpdateMode.Merge, cancellationToken).ConfigureAwait(false);
+                await TableClientInstance.UpsertEntityAsync(ToSdkEntity(entity), TableUpdateMode.Merge, cancellationToken).ConfigureAwait(false);
                 return entity;
             }
             catch (Exception ex)
@@ -85,7 +93,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                TableClientInstance.UpdateEntity(entity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Replace);
+                TableClientInstance.UpdateEntity(ToSdkEntity(entity), ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Replace);
                 return entity;
             }
             catch (Exception ex)
@@ -100,7 +108,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                await TableClientInstance.UpdateEntityAsync(entity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Replace, cancellationToken).ConfigureAwait(false);
+                await TableClientInstance.UpdateEntityAsync(ToSdkEntity(entity), ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Replace, cancellationToken).ConfigureAwait(false);
                 return entity;
             }
             catch (Exception ex)
@@ -115,7 +123,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                TableClientInstance.UpdateEntity(entity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Merge);
+                TableClientInstance.UpdateEntity(ToSdkEntity(entity), ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Merge);
                 return entity;
             }
             catch (Exception ex)
@@ -130,7 +138,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                await TableClientInstance.UpdateEntityAsync(entity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Merge, cancellationToken).ConfigureAwait(false);
+                await TableClientInstance.UpdateEntityAsync(ToSdkEntity(entity), ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Merge, cancellationToken).ConfigureAwait(false);
                 return entity;
             }
             catch (Exception ex)
@@ -227,18 +235,16 @@ namespace DataAccess.AzureStorage.Table
 
         public async Task<T> RetrieveEntityAsync<T>(string filter, CancellationToken cancellationToken = default) where T : AzureTableEntity
             => (await RetrieveEntitiesAsync<T>(filter, cancellationToken).ConfigureAwait(false)).FirstOrDefault();
+        #endregion
 
-
-        // ---------------------------------------------------------------
-        // DynamicTableEntity variants
-        // ---------------------------------------------------------------
+        #region DynamicTableEntity variants
         public DynamicTableEntity InsertEntity(DynamicTableEntity entity)
         {
             EnsureTableReady();
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 TableClientInstance.AddEntity(sdkEntity);
                 return entity;
             }
@@ -254,7 +260,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 await TableClientInstance.AddEntityAsync(sdkEntity, cancellationToken).ConfigureAwait(false);
                 return entity;
             }
@@ -270,7 +276,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 TableClientInstance.UpsertEntity(sdkEntity, TableUpdateMode.Merge);
                 return entity;
             }
@@ -286,7 +292,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 await TableClientInstance.UpsertEntityAsync(sdkEntity, TableUpdateMode.Merge, cancellationToken).ConfigureAwait(false);
                 return entity;
             }
@@ -302,7 +308,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 TableClientInstance.UpdateEntity(sdkEntity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Replace);
                 return entity;
             }
@@ -318,7 +324,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 await TableClientInstance.UpdateEntityAsync(sdkEntity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Replace, cancellationToken).ConfigureAwait(false);
                 return entity;
             }
@@ -334,7 +340,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 TableClientInstance.UpdateEntity(sdkEntity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Merge);
                 return entity;
             }
@@ -350,7 +356,7 @@ namespace DataAccess.AzureStorage.Table
             ValidateEntity(entity);
             try
             {
-                var sdkEntity = ToSdkEntity(entity);
+                TableEntity sdkEntity = ToSdkEntity(entity);
                 await TableClientInstance.UpdateEntityAsync(sdkEntity, ResolveIfMatch(ifMatch, entity.ETag), TableUpdateMode.Merge, cancellationToken).ConfigureAwait(false);
                 return entity;
             }
@@ -365,7 +371,7 @@ namespace DataAccess.AzureStorage.Table
             EnsureTableReady();
             try
             {
-                var entities = TableClientInstance.Query<Azure.Data.Tables.TableEntity>(filter: filter).ToList();
+                List<TableEntity> entities = TableClientInstance.Query<TableEntity>(filter: filter).ToList();
                 if (entities.Count == 0) return new List<DynamicTableEntity>();
 
                 return entities.Select(ToDynamicEntity).ToList();
@@ -381,8 +387,8 @@ namespace DataAccess.AzureStorage.Table
             EnsureTableReady();
             try
             {
-                var results = new List<DynamicTableEntity>();
-                await foreach (var entity in TableClientInstance.QueryAsync<Azure.Data.Tables.TableEntity>(filter: filter, cancellationToken: cancellationToken).ConfigureAwait(false))
+                List<DynamicTableEntity> results = new List<DynamicTableEntity>();
+                await foreach (var entity in TableClientInstance.QueryAsync<TableEntity>(filter: filter, cancellationToken: cancellationToken).ConfigureAwait(false))
                 {
                     results.Add(ToDynamicEntity(entity));
                 }
@@ -405,19 +411,34 @@ namespace DataAccess.AzureStorage.Table
         public Task<bool> DeleteEntityAsync(DynamicTableEntity entity, ETag? ifMatch = null, CancellationToken cancellationToken = default)
             => DeleteEntityAsync<DynamicTableEntity>(entity, ifMatch, cancellationToken);
 
-        // ---------------------------------------------------------------
-        // Internal helpers
-        // ---------------------------------------------------------------
+        private static TableEntity ToSdkEntity(DynamicTableEntity entity)
+        {
+            TableEntity tableEntity = new TableEntity(entity.PartitionKey, entity.RowKey);
+            foreach (var prop in entity.Properties)
+            {
+                tableEntity[prop.Key] = prop.Value;
+            }
+            return tableEntity;
+        }
 
-        private static void ValidateEntity<T>(T entity) where T : AzureTableEntity
+        private static DynamicTableEntity ToDynamicEntity(TableEntity source)
+        {
+            var dynamicEntity = new DynamicTableEntity();
+            dynamicEntity.SetEntity(source);
+            return dynamicEntity;
+        }
+        #endregion
+
+        #region Internal helpers
+        private static void ValidateEntity<T>(T entity) where T : class, IAzureTableEntity
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
-
             if (string.IsNullOrEmpty(entity.PartitionKey))
                 throw new ArgumentException("Entity.PartitionKey must not be null or empty.", nameof(entity));
 
             if (string.IsNullOrEmpty(entity.RowKey))
                 throw new ArgumentException("Entity.RowKey must not be null or empty.", nameof(entity));
+            NormalizeDateTimeKinds(entity);
         }
 
         /// <summary>
@@ -431,22 +452,89 @@ namespace DataAccess.AzureStorage.Table
             if (ifMatch.HasValue) return ifMatch.Value;
             return entityETag.Equals(default(ETag)) ? ETag.All : entityETag;
         }
+        #endregion
 
-        private static Azure.Data.Tables.TableEntity ToSdkEntity(DynamicTableEntity entity)
+        #region Validate DateTime
+        /// <summary>
+        /// Scans every public DateTime/DateTime? property on the entity and, if
+        /// its Kind is Unspecified, normalizes it according to
+        /// _unspecifiedDateTimeHandling — so callers throughout the existing
+        /// application don't need to be updated to call DateTime.SpecifyKind
+        /// themselves. Property lists are cached per type to avoid repeated
+        /// reflection cost on every call.
+        /// </summary>
+        private static void NormalizeDateTimeKinds<T>(T entity) where T : class, IAzureTableEntity
         {
-            var tableEntity = new Azure.Data.Tables.TableEntity(entity.PartitionKey, entity.RowKey);
-            foreach (var prop in entity.Properties)
+            PropertyInfo[] properties = DateTimePropertyCache.GetOrAdd(typeof(T), FindDateTimeProperties);
+            if (properties.Length == 0) return;
+            foreach (PropertyInfo property in properties)
             {
-                tableEntity[prop.Key] = prop.Value;
+                object rawValue = property.GetValue(entity);
+                if (rawValue == null) continue;
+                DateTime value = property.PropertyType == typeof(DateTime?) ? ((DateTime?)rawValue).Value : (DateTime)rawValue;
+                if (value.Kind != DateTimeKind.Unspecified) continue;
+                DateTime normalized = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+                property.SetValue(entity, property.PropertyType == typeof(DateTime?) ? (DateTime?)normalized : normalized);
             }
-            return tableEntity;
         }
 
-        private static DynamicTableEntity ToDynamicEntity(Azure.Data.Tables.TableEntity source)
+        private static PropertyInfo[] FindDateTimeProperties(Type type)
         {
-            var dynamicEntity = new DynamicTableEntity();
-            dynamicEntity.SetEntity(source);
-            return dynamicEntity;
+            return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => (p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?)) && p.CanRead && p.CanWrite)
+                .ToArray();
         }
+        #endregion
+
+        #region Validate Property
+        private static readonly ConcurrentDictionary<Type, (PropertyInfo[] Supported, PropertyInfo[] Skipped)> EntityPropertyMapCache = new ConcurrentDictionary<Type, (PropertyInfo[], PropertyInfo[])>();
+
+        /// <summary>
+        /// Returns the names of properties on T that Azure Table Storage cannot
+        /// represent and which are therefore silently excluded from every write
+        /// operation (Insert/Upsert/Replace/Merge). These properties are NOT
+        /// persisted — after a round trip through Retrieve, they'll hold their
+        /// type's default value, not whatever was set before the write.
+        /// </summary>
+        public static IReadOnlyList<string> GetUnsupportedProperties<T>() where T : IAzureTableEntity
+        {
+            var (_, skipped) = EntityPropertyMapCache.GetOrAdd(typeof(T), BuildPropertyMap);
+            return skipped.Select(p => p.Name).ToList();
+        }
+
+        private static (PropertyInfo[] Supported, PropertyInfo[] Skipped) BuildPropertyMap(Type type)
+        {
+            var allProperties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => p.CanRead && p.CanWrite && !IsSystemProperty(p.Name))
+                .ToArray();
+
+            var supported = allProperties.Where(p => EdmTypeMap.IsSupportedClrType(p.PropertyType)).ToArray();
+            var skipped = allProperties.Except(supported).ToArray();
+
+            return (supported, skipped);
+        }
+
+        private static bool IsSystemProperty(string name) => 
+                name == nameof(ITableEntity.PartitionKey) || name == nameof(ITableEntity.RowKey) ||
+                name == nameof(ITableEntity.Timestamp) || name == nameof(ITableEntity.ETag);
+
+        /// <summary>
+        /// Builds the actual wire-format entity for T, including only properties
+        /// whose CLR type Table Storage supports. Properties like a List&lt;string&gt;
+        /// (e.g. sCredential.Permissions) are silently omitted here — this is what
+        /// stops them from ever reaching Azure and triggering a 400 InvalidInput.
+        /// </summary>
+        private static TableEntity ToSdkEntity<T>(T entity) where T : IAzureTableEntity
+        {
+            var (supported, _) = EntityPropertyMapCache.GetOrAdd(typeof(T), BuildPropertyMap);
+
+            TableEntity sdkEntity = new TableEntity(entity.PartitionKey, entity.RowKey);
+            foreach (var property in supported)
+            {
+                sdkEntity[property.Name] = property.GetValue(entity);
+            }
+            return sdkEntity;
+        }
+        #endregion
     }
 }
