@@ -254,7 +254,7 @@ Notes:
 
 - `Properties` holds **only your custom columns** — `PartitionKey`, `RowKey`, `Timestamp`, and `ETag` are
   read directly off the entity itself (not duplicated inside the dictionary), so they can never go stale.
-  Call `entity.ToDictionary()` if you want one flat dictionary containing everything.
+  Call `entity.Get()` if you want one flat dictionary containing everything.
 - Supported property types: `string`, `byte[]`, `bool`, `DateTime`, `DateTimeOffset`, `double`, `int`,
   `long`, `Guid` — matching Azure Table Storage's own EDM type set (see `EdmType`). Unsupported types and
   `null` values are silently skipped, since Table Storage has no first-class "null property" concept —
