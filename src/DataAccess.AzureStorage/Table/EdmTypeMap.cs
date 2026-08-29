@@ -19,7 +19,7 @@ namespace DataAccess.AzureStorage.Table
                 [EdmType.String] = new[] { typeof(string) },
                 [EdmType.Binary] = new[] { typeof(byte[]) },
                 [EdmType.Boolean] = new[] { typeof(bool) },
-                [EdmType.DateTime] = new[] { typeof(DateTimeOffset) },
+                [EdmType.DateTimeOffset] = new[] { typeof(DateTimeOffset) },
                 [EdmType.DateTime] = new[] { typeof(DateTime) },
                 [EdmType.Double] = new[] { typeof(double) },
                 [EdmType.Guid] = new[] { typeof(Guid) },
