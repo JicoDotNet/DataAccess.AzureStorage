@@ -40,7 +40,7 @@ jobs:
     name: Pack NuGet package
     needs: build
     runs-on: windows-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
