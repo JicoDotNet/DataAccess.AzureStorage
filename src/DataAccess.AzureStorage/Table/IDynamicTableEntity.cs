@@ -10,7 +10,7 @@ namespace DataAccess.AzureStorage.Table
     ///
     /// PartitionKey, RowKey, Timestamp and ETag are NOT duplicated inside
     /// <see cref="Properties"/> — they already exist as strongly-typed members
-    /// via <see cref="ITableEntity"/>. Use <see cref="ToDictionary"/> if you
+    /// via <see cref="ITableEntity"/>. Use <see cref="Get"/> if you
     /// need one flat dictionary containing everything (system fields + custom
     /// properties), e.g. for logging or serialization.
     /// </summary>
@@ -34,6 +34,6 @@ namespace DataAccess.AzureStorage.Table
         /// Returns a single flat dictionary containing both the system fields
         /// (PartitionKey, RowKey, Timestamp, ETag) and all custom properties.
         /// </summary>
-        IDictionary<string, object> ToDictionary();
+        IDictionary<string, object> Get();
     }
 }

@@ -1,16 +1,21 @@
 <Project>
 	<PropertyGroup>
 		<Id>DataAccess.AzureStorage</Id>		
-		<Version>4.0.1</Version>
-		<PackageVersion>4.0.1</PackageVersion>
-		<FileVersion>4.0.1.1</FileVersion>
-		<AssemblyVersion>4.0.1.1</AssemblyVersion>
+		<Version>4.1.0</Version>
+		<PackageVersion>4.1.0</PackageVersion>
+		<FileVersion>4.1.0.1</FileVersion>
+		<AssemblyVersion>4.1.0.1</AssemblyVersion>
 		
 		<Authors>Soubhik Nandy</Authors>
 		<Company>github.com/JicoDotNet</Company>
 		<PackageTags>azure;table;blob;storage;netstandard;Soubhik;Nandy;Azure;Storage;Table;Blob</PackageTags>
 		<Description>Azure Table and Blob Storage Library for .NETStandard 2.0 and 2.1</Description>
-		<ReleaseNotes>This is 4.0.1 version for accessing Azure Storage. Bug fix, interduce `IAzureTableEntity`</ReleaseNotes>
+		<ReleaseNotes>
+			This is 4.1.0 version for accessing Azure Storage. 
+			Rename 'TableEntity' to 'AzureTableEntity'. 
+			Introduce interface 'IAzureTableEntity'
+			Bug fix for DateTime property and unsupported property
+		</ReleaseNotes>
 		
 		<PackageProjectUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/JicoDotNet/DataAccess.AzureStorage/tree/master</RepositoryUrl>

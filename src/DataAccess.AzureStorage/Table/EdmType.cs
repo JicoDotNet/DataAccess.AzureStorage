@@ -1,5 +1,6 @@
 ﻿namespace DataAccess.AzureStorage.Table
-{    public enum EdmType
+{    
+    public enum EdmType
     {
         /// <summary>
         /// Represents fixed- or variable-length character data.
@@ -22,22 +23,29 @@
         DateTime,
 
         /// <summary>
+        /// Represents date and time offset.
+        /// </summary>
+        DateTimeOffset,
+
+        /// <summary>
         /// Represents a floating point number with 15 digits precision that can represent
         ///     values with approximate range of +/- 2.23e -308 through +/- 1.79e +308.
         /// </summary>
         Double,
 
-        //
-        // Summary:
-        //     Represents a 16-byte (128-bit) unique identifier value.
+        /// <summary>
+        /// Represents a 16-byte (128-bit) unique identifier value.
+        /// </summary>
         Guid,
-        //
-        // Summary:
-        //     Represents a signed 32-bit integer value.
+
+        /// <summary>
+        /// Represents a signed 32-bit integer value.
+        /// </summary>
         Int32,
-        //
-        // Summary:
-        //     Represents a signed 64-bit integer value.
+
+        /// <summary>
+        /// Represents a signed 64-bit integer value.
+        /// </summary>
         Int64
     }
 }
