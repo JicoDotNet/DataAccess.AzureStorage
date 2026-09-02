@@ -1,0 +1,8 @@
+# Default owner for everything
+* @JicoDotNet
+
+# Specific owner for all Markdown files
+*.md @JicoDotNet
+
+# Owner for specific directory
+/src/ @JicoDotNet
